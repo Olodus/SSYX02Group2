@@ -1,5 +1,9 @@
 class StdMasterDirector():
+    def construct(self):
+        builder = MasterBuilder()
 
+        builder.buildNodes(2)
+        builder.buildUWBSensor()
 
 class MasterBuilder():
 
@@ -13,3 +17,6 @@ class MasterBuilder():
         uwb = UWBHandler()
         self.masterclient.setPositionSensor(uwb)
         self.masterclient.setRotationSensor(uwb)
+
+    def buildKalman(self):
+        self.masterclient.setFilter(Kalman())
