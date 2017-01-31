@@ -2,6 +2,8 @@ class MasterClient():
 
     def __init__(self):
 
+    def run(self):
+
     def setPositionSensor(self,sensor):
         self.positionSensor = sensor
 
