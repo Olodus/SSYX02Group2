@@ -10,6 +10,7 @@ class MasterClient():
     def __init__(self):
 
     def run(self):
+        self.com.moveForward(0.2)
 
     def setPositionSensor(self,sensor):
         self.positionSensor = sensor

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-PKG = 'robotclient'
+
 import roslib; roslib.load_manifest(PKG)
 from robotclient.srv import *
 import rospy
@@ -20,7 +20,7 @@ def handle_rotateRobot(req):
     """
     print rospy.get_name(), "Rotatating: %s"%str(req.deg)
     # Publisher to rosaria node
-    pub = rospy.Publisher("RosAria/cmd_vel", Twist, queue_size=10)    
+    pub = rospy.Publisher("RosAria/cmd_vel", Twist, queue_size=10)
 
     # Sleep for 0.01s to ensure ready for rotate
     twist = Twist()
@@ -45,7 +45,7 @@ def handle_rotateRobot(req):
     return RotateRobotResponse(ack)
 
 
-    
+
 def rotateRobot_server():
     """
     Initiates service
@@ -59,4 +59,3 @@ def rotateRobot_server():
 
 if __name__ == "__main__":
     rotateRobot_server()
-
