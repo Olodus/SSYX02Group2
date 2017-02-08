@@ -1,16 +1,10 @@
-from enum import Enum
-
-class Commands(Enum):
-    getCoords = 0
-    moveForward = 1
-    rotate = 2
 
 class MasterClient():
 
     def __init__(self):
 
     def run(self):
-        self.com.moveForward(0.2)
+        self.com.moveForward(1,0.2)
 
     def setPositionSensor(self,sensor):
         self.positionSensor = sensor
