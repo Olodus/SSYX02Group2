@@ -1,11 +1,13 @@
 #!/usr/bin/env python
+PKG = 'robotclient'
 import roslib; roslib.load_manifest(PKG)
-from robot_client.srv import *
+from robotclient.srv import *
 import rospy
 from rospy_tutorials.msg import Floats
 from rospy.numpy_msg import numpy_msg
 from std_msgs.msg import String
 from geometry_msgs.msg import Twist
+import numpy as np
 
 
 
@@ -18,7 +20,7 @@ def handle_moveRobot(req):
     """
     print rospy.get_name(), "Moving: %s forward "%str(req.length)
     # Publisher to rosaria node
-    pub = rospy.Publisher("RosAria/cmd_vel", Twist, queue_size=10)
+    pub = rospy.Publisher("RosAria/cmd_vel", Twist, queue_size=10)    
 
     # Sleeping for 0.01s to ensure ready for movement
     twist = Twist()
@@ -43,7 +45,7 @@ def handle_moveRobot(req):
     return MoveRobotResponse(ack)
 
 
-
+    
 def moveRobot_server():
     """
     Initiates service
@@ -57,3 +59,4 @@ def moveRobot_server():
 
 if __name__ == "__main__":
     moveRobot_server()
+
