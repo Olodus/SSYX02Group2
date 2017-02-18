@@ -12,7 +12,7 @@ import numpy as np
 import roslib;
 
 
-# rospy.loginfo(rospy.get_caller_id()+"I heard %s", data.pose.pose.position.x) 
+# rospy.loginfo(rospy.get_caller_id()+"I heard %s", data.pose.pose.position.x)
 
 p = 0
 pub = rospy.Publisher("RosAria/cmd_vel", Twist, queue_size=1)
@@ -33,7 +33,7 @@ def setAngle(theta_r,theta):
     	twist.angular.z = -0.2*math.copysign(1,theta_r-theta)
     	pub.publish(twist)
     	rospy.sleep(0.01)
-    
+
     else: #loopa sa den fortsatter i en cirkel
 	twist.angular.z=0
 	pub.publish(twist)
@@ -46,9 +46,9 @@ def distanceToPoint(x,y,pointx,pointy):
 def angleToPoint(x,y,pointx,pointy):
     print x
     print y
-    print pointx 
+    print pointx
     print pointy
-    angle = math.atan((pointy-y)/(pointx-x))
+    angle = math.atan2  ((pointy-y)/(pointx-x))
     print(angle*180/PI)
     return angle
 
@@ -62,10 +62,10 @@ def callback(data):
     euler = tf.transformations.euler_from_quaternion(quart)
 
     if distanceToPoint(x,y,pathx[p],pathy[p])<=0.1:
-        
+
 	p= (p+1)%6
-        
-        print "p = " 
+
+        print "p = "
         print p
 
     else:
@@ -86,7 +86,7 @@ def setStartValues():
     p = 0
     global pathx
     pathx = (1, 1, 0, 0, -1, -1)
-    global pathy 
+    global pathy
     pathy = (0, -1, -1, 1, 1, 0)
     global twist
     twist = Twist()
