@@ -48,7 +48,7 @@ def angleToPoint(x,y,pointx,pointy):
     print y
     print pointx
     print pointy
-    angle = math.atan2  ((pointy-y)/(pointx-x))
+    angle = math.atan2((pointy-y),(pointx-x))
     print(angle*180/PI)
     return angle
 
