@@ -130,18 +130,18 @@ def setStartValues():
 	global robot1
 	robot1 = Robot(1,4,0,1)
 
-    global pathx
-    a=2
-    pathx = (a, a, 0, 0, -a, -a)
-    global pathy
-    pathy = (0, -a, -a, a, a, 0)
+	global pathx
+	a=2
+	pathx = (a, a, 0, 0, -a, -a)
+	global pathy
+	pathy = (0, -a, -a, a, a, 0)
 	global intersection_point1
 	global intersection_point2
 	intersection_point1 = 1
 	intersection_point2 = 3
 
-    global PI
-    PI = math.pi
+	global PI
+	PI = math.pi
 
 	global synch_robots
 	synch_robots = True
