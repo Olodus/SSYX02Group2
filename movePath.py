@@ -21,9 +21,14 @@ class Robot(object):
 		self.offsetY = startY
 		self.x = startX
 		self.y = startY
+		self.waitMode = False
 
 	def publishTwist(self):
-		self.pub.publish(self.twist)
+		if not waitMode:
+			self.pub.publish(self.twist)
+		else:
+			self.twist.linear.x = 0.0
+			self.pub.publish(self.twist)
 
 
 
@@ -74,6 +79,8 @@ def callback0(data):
 
 	if distanceToPoint(x,y,pathx[robot0.nextPoint],pathy[robot0.nextPoint])<=0.2:
 		robot0.nextPoint= (robot0.nextPoint+1)%len(pathx)
+		if (robot0.nextPoint == intersection_point1 or robot0.nextPoint == intersection_point2) and synch_robots:
+			robot0.waitMode = True
 
 	point_angle = angleToPoint(x, y, pathx[robot0.nextPoint], pathy[robot0.nextPoint])
 	ang = setAngle(robot_angle, point_angle)
@@ -97,6 +104,8 @@ def callback1(data):
 
 	if distanceToPoint(x,y,pathx[robot1.nextPoint]+robot1.offsetX,pathy[robot1.nextPoint]+robot1.offsetY)<=0.2:
 		robot1.nextPoint = (robot1.nextPoint+1)%len(pathx)
+		if (robot1.nextPoint == intersection_point1 or robot1.nextPoint == intersection_point2) and synch_robots:
+			robot1.waitMode = True
 
 	point_angle = angleToPoint(x, y, pathx[robot1.nextPoint]+robot1.offsetX, pathy[robot1.nextPoint]+robot1.offsetY)
 	ang = setAngle(robot_angle, point_angle)
@@ -126,9 +135,16 @@ def setStartValues():
     pathx = (a, a, 0, 0, -a, -a)
     global pathy
     pathy = (0, -a, -a, a, a, 0)
+	global intersection_point1
+	global intersection_point2
+	intersection_point1 = 1
+	intersection_point2 = 3
 
     global PI
     PI = math.pi
+
+	global synch_robots
+	synch_robots = True
 
 
 if __name__ == '__main__':
