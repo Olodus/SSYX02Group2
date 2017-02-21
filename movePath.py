@@ -12,9 +12,7 @@ import numpy as np
 import roslib;
 
 class Robot(object):
-    """docstring for Robot."""
     def __init__(self, idNumber, startPoint, startX, startY):
-        super(Robot, self).__init__()
         self.idNumber = idNumber
         self.nextPoint = startPoint
         self.twist = Twist()
@@ -29,12 +27,11 @@ class Robot(object):
 
 
 
-
 def setAngle(theta_curr,theta):
     if math.fabs(theta_curr-theta)>10*PI/180:
 		if theta_curr < theta:
 			if math.fabs(theta_curr - theta)<PI:
-				return 0.3#*math.copysign(1,theta_curr-theta)
+				return 0.3
 			else:
 				return -0.3
 		else:
@@ -46,7 +43,7 @@ def setAngle(theta_curr,theta):
     elif 3*PI/180<=math.fabs(theta_curr-theta) and math.fabs(theta_curr-theta)<=8*PI/180:
 		if theta_curr < theta:
 			if math.fabs(theta_curr - theta)<PI:
-				return = 0.1#*math.copysign(1,theta_curr-theta)
+				return = 0.1
 			else:
 				return -0.1
 		else:
@@ -73,12 +70,13 @@ def callback0(data):
 	y = data.pose.pose.position.y
 	quart = (data.pose.pose.orientation.x, data.pose.pose.orientation.y, data.pose.pose.orientation.z, data.pose.pose.orientation.w)
 	euler = tf.transformations.euler_from_quaternion(quart)
+	robot_angle = euler[2]
 
 	if distanceToPoint(x,y,pathx[robot0.nextPoint],pathy[robot0.nextPoint])<=0.2:
 		robot0.nextPoint= (robot0.nextPoint+1)%len(pathx)
 
-	tempAngle = angleToPoint(x, y, pathx[robot0.nextPoint], pathy[robot0.nextPoint])
-	ang = setAngle(euler[2], tempAngle)
+	point_angle = angleToPoint(x, y, pathx[robot0.nextPoint], pathy[robot0.nextPoint])
+	ang = setAngle(robot_angle, point_angle)
 	robot0.twist.angular.z = ang
 	if math.fabs(ang) > 0.2:
 		robot0.twist.linear.x = 0.0
@@ -88,19 +86,20 @@ def callback0(data):
 	robot0.publishTwist()
 	rospy.sleep(0.1)
 
-def callback1(data1):
+def callback1(data):
 	global robot1
 
-	x1 = data1.pose.pose.position.x
-	y1 = data1.pose.pose.position.y
-	quart1 = (data1.pose.pose.orientation.x, data1.pose.pose.orientation.y, data1.pose.pose.orientation.z, data1.pose.pose.orientation.w)
-	euler1 = tf.transformations.euler_from_quaternion(quart1)
+	x = data.pose.pose.position.x
+	y = data.pose.pose.position.y
+	quart = (data.pose.pose.orientation.x, data.pose.pose.orientation.y, data.pose.pose.orientation.z, data.pose.pose.orientation.w)
+	euler = tf.transformations.euler_from_quaternion(quart)
+	robot_angle = euler[2]
 
-	if distanceToPoint(x1,y1,pathx[robot1.nextPoint]+robot1.offsetX,pathy[robot1.nextPoint]+robot1.offsetY)<=0.2:
+	if distanceToPoint(x,y,pathx[robot1.nextPoint]+robot1.offsetX,pathy[robot1.nextPoint]+robot1.offsetY)<=0.2:
 		robot1.nextPoint = (robot1.nextPoint+1)%len(pathx)
 
-	tempAngle1 = angleToPoint(x1, y1, pathx[robot1.nextPoint]+robot1.offsetX, pathy[robot1.nextPoint]+robot1.offsetY)
-	ang = setAngle(euler1[2], tempAngle1)
+	point_angle = angleToPoint(x, y, pathx[robot1.nextPoint]+robot1.offsetX, pathy[robot1.nextPoint]+robot1.offsetY)
+	ang = setAngle(robot_angle, point_angle)
 	robot1.twist.angular.z = ang
 	if math.fabs(ang) > 0.2:
 		robot1.twist.linear.x = 0.0
