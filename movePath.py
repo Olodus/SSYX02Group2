@@ -30,56 +30,33 @@ class Robot(object):
 
 
 
-def setAngle(theta_curr,theta,tempPub,tempTwist):
-
+def setAngle(theta_curr,theta):
     if math.fabs(theta_curr-theta)>10*PI/180:
-	tempTwist.linear.x = 0
-	if theta_curr < theta:
-		if math.fabs(theta_curr - theta)<PI:
-			tempTwist.angular.z = 0.3#*math.copysign(1,theta_curr-theta)
+		if theta_curr < theta:
+			if math.fabs(theta_curr - theta)<PI:
+				return 0.3#*math.copysign(1,theta_curr-theta)
+			else:
+				return -0.3
 		else:
-			tempTwist.angular.z = -0.3
-	else:
-		if math.fabs(theta_curr - theta)<PI:
-			tempTwist.angular.z = -0.3
-		else:
-			tempTwist.angular.z = 0.3
-	print "-------------------- ANGLE FAR ------------------------------"
-	print "current theta:"+str(theta_curr*180/PI)
-	print "theta to desired point:"+str(theta*180/PI)
-	print "theta difference: "+str(math.fabs(theta_curr-theta)*180/PI)
-    	tempPub.publish(tempTwist)
-    	rospy.sleep(0.01)
+			if math.fabs(theta_curr - theta)<PI:
+				return -0.3
+			else:
+				return 0.3
 
     elif 3*PI/180<=math.fabs(theta_curr-theta) and math.fabs(theta_curr-theta)<=8*PI/180:
-	tempTwist.linear.x = 0.3
-	if theta_curr < theta:
-		if math.fabs(theta_curr - theta)<PI:
-			tempTwist.angular.z = 0.1#*math.copysign(1,theta_curr-theta)
+		if theta_curr < theta:
+			if math.fabs(theta_curr - theta)<PI:
+				return = 0.1#*math.copysign(1,theta_curr-theta)
+			else:
+				return -0.1
 		else:
-			tempTwist.angular.z = -0.1
-	else:
-		if math.fabs(theta_curr - theta)<PI:
-			tempTwist.angular.z = -0.1
-		else:
-			tempTwist.angular.z = 0.1
-    	#twist.angular.z = -0.05*math.copysign(1,theta_curr-theta)
-    	tempPub.publish(tempTwist)
-	print "lllllllllllllllllllll ANGLE NEAR llllllllllllllllllllllllllllll"
-	print "current theta:"+str(theta_curr*180/PI)
-	print "theta to desired point:"+str(theta*180/PI)
-	print "theta difference: "+str(math.fabs(theta_curr-theta)*180/PI)
-    	rospy.sleep(0.1)
+			if math.fabs(theta_curr - theta)<PI:
+				return -0.1
+			else:
+				return 0.1
 
     else:
-	tempTwist.linear.x=0.5
-	tempTwist.angular.z=0
-	tempPub.publish(tempTwist)
-	print "aaaaaaaaaaaaaaaaaaaaaaa ANGLE EXACT aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-	print "current theta:"+str(theta_curr*180/PI)
-	print "theta to desired point:"+str(theta*180/PI)
-	print "theta difference: "+str(math.fabs(theta_curr-theta)*180/PI)
-	rospy.sleep(0.01)
+		return 0.0
 
 def distanceToPoint(x,y,pointx,pointy):
     dist = math.sqrt(math.pow(pointx-x,2)+math.pow(pointy-y,2))
@@ -92,36 +69,46 @@ def angleToPoint(x,y,pointx,pointy):
 def callback0(data):
 	global robot0
 
-    x = data.pose.pose.position.x
-    y = data.pose.pose.position.y
-    quart = (data.pose.pose.orientation.x, data.pose.pose.orientation.y, data.pose.pose.orientation.z, data.pose.pose.orientation.w)
-    euler = tf.transformations.euler_from_quaternion(quart)
+	x = data.pose.pose.position.x
+	y = data.pose.pose.position.y
+	quart = (data.pose.pose.orientation.x, data.pose.pose.orientation.y, data.pose.pose.orientation.z, data.pose.pose.orientation.w)
+	euler = tf.transformations.euler_from_quaternion(quart)
 
-    if distanceToPoint(x,y,pathx[robot0.nextPoint],pathy[robot0.nextPoint])<=0.2:
-	robot0.nextPoint= (robot0.nextPoint+1)%len(pathx)
-	rospy.sleep(0.1)
+	if distanceToPoint(x,y,pathx[robot0.nextPoint],pathy[robot0.nextPoint])<=0.2:
+		robot0.nextPoint= (robot0.nextPoint+1)%len(pathx)
 
-    else:
 	tempAngle = angleToPoint(x, y, pathx[robot0.nextPoint], pathy[robot0.nextPoint])
-	setAngle(euler[2], tempAngle, robot0.pub, robot0.twist)
-	robot0.pub.publish(robot0.twist)
+	ang = setAngle(euler[2], tempAngle)
+	robot0.twist.angular.z = ang
+	if math.fabs(ang) > 0.2:
+		robot0.twist.linear.x = 0.0
+	else:
+		robot0.twist.linear.x = 0.3
+
+	robot0.publishTwist()
+	rospy.sleep(0.1)
 
 def callback1(data1):
 	global robot1
 
-    x1 = data1.pose.pose.position.x
-    y1 = data1.pose.pose.position.y
-    quart1 = (data1.pose.pose.orientation.x, data1.pose.pose.orientation.y, data1.pose.pose.orientation.z, data1.pose.pose.orientation.w)
-    euler1 = tf.transformations.euler_from_quaternion(quart1)
+	x1 = data1.pose.pose.position.x
+	y1 = data1.pose.pose.position.y
+	quart1 = (data1.pose.pose.orientation.x, data1.pose.pose.orientation.y, data1.pose.pose.orientation.z, data1.pose.pose.orientation.w)
+	euler1 = tf.transformations.euler_from_quaternion(quart1)
 
-    if distanceToPoint(x1,y1,pathx[robot1.nextPoint]+robot1.offsetX,pathy[robot1.nextPoint]+robot1.offsetY)<=0.2:
-	robot1.nextPoint= (robot1.nextPoint+1)%len(pathx)
-	rospy.sleep(0.1)
+	if distanceToPoint(x1,y1,pathx[robot1.nextPoint]+robot1.offsetX,pathy[robot1.nextPoint]+robot1.offsetY)<=0.2:
+		robot1.nextPoint = (robot1.nextPoint+1)%len(pathx)
 
-    else:
 	tempAngle1 = angleToPoint(x1, y1, pathx[robot1.nextPoint]+robot1.offsetX, pathy[robot1.nextPoint]+robot1.offsetY)
-	setAngle(euler1[2], tempAngle1, robot1.pub, robot1.twist)
-	robot1.pub.publish(robot1.twist)
+	ang = setAngle(euler1[2], tempAngle1)
+	robot1.twist.angular.z = ang
+	if math.fabs(ang) > 0.2:
+		robot1.twist.linear.x = 0.0
+	else:
+		robot1.twist.linear.x = 0.3
+
+	robot1.publishTwist()
+	rospy.sleep(0.1)
 
 def movePath():
     rospy.init_node('oodometry', anonymous=True)
