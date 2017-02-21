@@ -12,11 +12,11 @@ import numpy as np
 import roslib;
 
 class Robot(object):
-    def __init__(self, idNumber, startPoint, startX, startY):
-        self.idNumber = idNumber
-        self.nextPoint = startPoint
-        self.twist = Twist()
-        self.pub = rospy.Publisher("RosAria"+str(idNumber)+"/cmd_vel", Twist, queue_size=1)
+	def __init__(self, idNumber, startPoint, startX, startY):
+		self.idNumber = idNumber
+		self.nextPoint = startPoint
+		self.twist = Twist()
+		self.pub = rospy.Publisher("RosAria"+str(idNumber)+"/cmd_vel", Twist, queue_size=1)
 		self.offsetX = startX
 		self.offsetY = startY
 		self.x = startX
