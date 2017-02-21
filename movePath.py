@@ -24,7 +24,6 @@ class Robot(object):
 		self.x = startX
 		self.y = startY
 
-
 	def publishTwist(self):
 		self.pub.publish(self.twist)
 
@@ -99,7 +98,7 @@ def callback0(data):
     euler = tf.transformations.euler_from_quaternion(quart)
 
     if distanceToPoint(x,y,pathx[robot0.nextPoint],pathy[robot0.nextPoint])<=0.2:
-	robot0.nextPoint= (robot0.nextPoint+1)%6
+	robot0.nextPoint= (robot0.nextPoint+1)%len(pathx)
 	rospy.sleep(0.1)
 
     else:
@@ -116,7 +115,7 @@ def callback1(data1):
     euler1 = tf.transformations.euler_from_quaternion(quart1)
 
     if distanceToPoint(x1,y1,pathx[robot1.nextPoint]+robot1.offsetX,pathy[robot1.nextPoint]+robot1.offsetY)<=0.2:
-	robot1.nextPoint= (robot1.nextPoint+1)%6
+	robot1.nextPoint= (robot1.nextPoint+1)%len(pathx)
 	rospy.sleep(0.1)
 
     else:
