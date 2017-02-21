@@ -24,7 +24,7 @@ class Robot(object):
 		self.waitMode = False
 
 	def publishTwist(self):
-		if not waitMode:
+		if not self.waitMode:
 			self.pub.publish(self.twist)
 		else:
 			self.twist.linear.x = 0.0
@@ -137,7 +137,7 @@ def setStartValues():
 	pathy = (0, -a, -a, a, a, 0)
 	global intersection_point1
 	global intersection_point2
-	intersection_point1 = 1
+	intersection_point1 = 0
 	intersection_point2 = 3
 
 	global PI
