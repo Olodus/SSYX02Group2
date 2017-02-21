@@ -61,12 +61,10 @@ def setAngle(theta_curr,theta):
 		return 0.0
 
 def distanceToPoint(x,y,pointx,pointy):
-    dist = math.sqrt(math.pow(pointx-x,2)+math.pow(pointy-y,2))
-    return dist
+	return math.sqrt(math.pow(pointx-x,2)+math.pow(pointy-y,2))
 
 def angleToPoint(x,y,pointx,pointy):
-    angle = math.atan2(pointy-y,pointx-x)
-    return angle
+	return math.atan2(pointy-y,pointx-x)
 
 def callback0(data):
 	global robot0
@@ -119,10 +117,10 @@ def callback1(data):
 	rospy.sleep(0.1)
 
 def movePath():
-    rospy.init_node('oodometry', anonymous=True)
-    sub = rospy.Subscriber('RosAria0/pose', Odometry, callback0)
-    sub1 = rospy.Subscriber('RosAria1/pose', Odometry, callback1)
-    rospy.spin()
+	rospy.init_node('oodometry', anonymous=True)
+	sub = rospy.Subscriber('RosAria0/pose', Odometry, callback0)
+	sub1 = rospy.Subscriber('RosAria1/pose', Odometry, callback1)
+	rospy.spin()
 
 def setStartValues():
 	global robot0
@@ -148,8 +146,8 @@ def setStartValues():
 
 
 if __name__ == '__main__':
-    setStartValues()
-    try:
-        movePath()
-    except rospy.ROSInterruptException:
-        pass
+	setStartValues()
+	try:
+		movePath()
+	except rospy.ROSInterruptException:
+		pass
