@@ -48,7 +48,7 @@ def setAngle(theta_curr,theta):
     elif 3*PI/180<=math.fabs(theta_curr-theta) and math.fabs(theta_curr-theta)<=8*PI/180:
 		if theta_curr < theta:
 			if math.fabs(theta_curr - theta)<PI:
-				return = 0.1
+				return 0.1
 			else:
 				return -0.1
 		else:
