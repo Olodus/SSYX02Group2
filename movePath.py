@@ -98,7 +98,7 @@ def callback0(data):
     quart = (data.pose.pose.orientation.x, data.pose.pose.orientation.y, data.pose.pose.orientation.z, data.pose.pose.orientation.w)
     euler = tf.transformations.euler_from_quaternion(quart)
 
-    if distanceToPoint(x,y,pathx[robot0.nextPoint],pathy[robot0.nextPoint])<=0.1:
+    if distanceToPoint(x,y,pathx[robot0.nextPoint],pathy[robot0.nextPoint])<=0.2:
 	robot0.nextPoint= (robot0.nextPoint+1)%6
 	rospy.sleep(0.1)
 
@@ -115,7 +115,7 @@ def callback1(data1):
     quart1 = (data1.pose.pose.orientation.x, data1.pose.pose.orientation.y, data1.pose.pose.orientation.z, data1.pose.pose.orientation.w)
     euler1 = tf.transformations.euler_from_quaternion(quart1)
 
-    if distanceToPoint(x1,y1,pathx[robot1.nextPoint]+robot1.offsetX,pathy[robot1.nextPoint]+robot1.offsetY)<=0.1:
+    if distanceToPoint(x1,y1,pathx[robot1.nextPoint]+robot1.offsetX,pathy[robot1.nextPoint]+robot1.offsetY)<=0.2:
 	robot1.nextPoint= (robot1.nextPoint+1)%6
 	rospy.sleep(0.1)
 
