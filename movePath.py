@@ -129,6 +129,14 @@ def callback1(data):
 	robot1.publishTwist()
 	rospy.sleep(0.1)
 
+def simple_obj_func():
+
+def both_in_intersection():
+	print "Both in intersection"
+
+def outside_intersection():
+	print "No chance of crash, hopefully..."
+
 def run_controller():
 	rospy.init_node('oodometry', anonymous=True)
 	sub = rospy.Subscriber('RosAria0/pose', Odometry, callback0)
@@ -139,13 +147,13 @@ def run_controller():
 				robot0.waitMode = False
 				robot1.waitMode = False
 			elif robot0.in_intersection and robot1.in_intersection:
-				print "Both in intersection"
+				both_in_intersection()
 			else:
-				print "No chance of crash, hopefully..."
+				outside_intersection()
 		elif robot0.in_intersection and robot1.in_intersection:
-			print "Both in intersection"
+			both_in_intersection()
 		else:
-			print "No chance of crash, hopefully..."
+			outside_intersection()
 
 		rospy.sleep(1.0)
 
