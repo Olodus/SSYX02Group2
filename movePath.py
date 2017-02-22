@@ -81,7 +81,7 @@ def callback0(data):
 		robot0.nextPoint= (robot0.nextPoint+1)%len(pathx)
 		if (robot0.nextPoint == intersection_point1 or robot0.nextPoint == intersection_point2):
 			robot0.in_intersection = True
-			if sync_start:
+			if sync_robots:
 				robot0.waitMode = True
 				print "Waiting: robot0"
 		else:
@@ -112,7 +112,7 @@ def callback1(data):
 		robot1.nextPoint = (robot1.nextPoint+1)%len(pathx)
 		if (robot1.nextPoint == intersection_point1 or robot1.nextPoint == intersection_point2):
 			robot1.in_intersection = True
-			if sync_start:
+			if sync_robots:
 				robot1.waitMode = True
 				print "Waiting: robot1"
 		else:
@@ -134,7 +134,7 @@ def run_controller():
 	sub = rospy.Subscriber('RosAria0/pose', Odometry, callback0)
 	sub1 = rospy.Subscriber('RosAria1/pose', Odometry, callback1)
 	while True:
-		if sync_start:
+		if sync_robots:
 			if robot0.waitMode and robot1.waitMode and math.fabs(robot0.twist.angular.z) < 0.05 and math.fabs(robot1.twist.angular.z) < 0.05:
 				robot0.waitMode = False
 				robot1.waitMode = False
@@ -168,8 +168,8 @@ def setStartValues():
 	global PI
 	PI = math.pi
 
-	global sync_start
-	sync_start = True
+	global sync_robots
+	sync_robots = True
 
 
 if __name__ == '__main__':
