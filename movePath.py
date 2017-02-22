@@ -70,6 +70,7 @@ def angleToPoint(x,y,pointx,pointy):
 
 def callback0(data):
 	global robot0
+	global intersection_ongoing
 
 	robot0.x = data.pose.pose.position.x
 	robot0.y = data.pose.pose.position.y
@@ -84,6 +85,9 @@ def callback0(data):
 			if sync_start and not intersection_ongoing:
 				robot0.waitMode = True
 				print "Waiting: robot0"
+		else:
+			robot0.in_intersection = False
+			intersection_ongoing = False
 
 	point_angle = angleToPoint(robot0.x, robot0.y, pathx[robot0.nextPoint], pathy[robot0.nextPoint])
 	ang = setAngle(robot_angle, point_angle)
@@ -98,6 +102,7 @@ def callback0(data):
 
 def callback1(data):
 	global robot1
+	global intersection_ongoing
 
 	robot1.x = data.pose.pose.position.x
 	robot1.y = data.pose.pose.position.y
@@ -112,6 +117,9 @@ def callback1(data):
 			if sync_start and not intersection_ongoing:
 				robot1.waitMode = True
 				print "Waiting: robot1"
+		else:
+			robot1.in_intersection = False
+			intersection_ongoing = False
 
 	point_angle = angleToPoint(robot1.x, robot1.y, pathx[robot1.nextPoint]+robot1.offsetX, pathy[robot1.nextPoint]+robot1.offsetY)
 	ang = setAngle(robot_angle, point_angle)
@@ -128,7 +136,22 @@ def run_controller():
 	rospy.init_node('oodometry', anonymous=True)
 	sub = rospy.Subscriber('RosAria0/pose', Odometry, callback0)
 	sub1 = rospy.Subscriber('RosAria1/pose', Odometry, callback1)
-	rospy.spin()
+	while True:
+		if sync_start:
+			if robot0.waitMode and robot1.waitMode and math.fabs(robot0.twist.angular.z) < 0.05 and math.fabs(robot1.twist.angular.z) < 0.05:
+				intersection_ongoing = True
+				robot0.waitMode = False
+				robot1.waitMode = False
+			elif robot0.in_intersection and robot1.in_intersection:
+				print "Both in intersection"
+			else:
+				print "No chance of crash, hopefully..."
+		elif robot0.in_intersection and robot1.in_intersection:
+			print "Both in intersection"
+		else:
+			print "No chance of crash, hopefully..."
+
+		rospy.sleep(1.0)
 
 def setStartValues():
 	global robot0
