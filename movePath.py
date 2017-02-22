@@ -77,7 +77,7 @@ def callback0(data):
 
 	if distanceToPoint(x,y,pathx[robot0.nextPoint],pathy[robot0.nextPoint])<=0.2:
 		robot0.nextPoint= (robot0.nextPoint+1)%len(pathx)
-		if (robot0.nextPoint == intersection_point1 or robot0.nextPoint == intersection_point2) and synch_robots:
+		if (robot0.nextPoint == intersection_point1 or robot0.nextPoint == intersection_point2) and sync_start:
 			robot0.waitMode = True
 
 	point_angle = angleToPoint(x, y, pathx[robot0.nextPoint], pathy[robot0.nextPoint])
@@ -102,7 +102,7 @@ def callback1(data):
 
 	if distanceToPoint(x,y,pathx[robot1.nextPoint]+robot1.offsetX,pathy[robot1.nextPoint]+robot1.offsetY)<=0.2:
 		robot1.nextPoint = (robot1.nextPoint+1)%len(pathx)
-		if (robot1.nextPoint == intersection_point1 or robot1.nextPoint == intersection_point2) and synch_robots:
+		if (robot1.nextPoint == intersection_point1 or robot1.nextPoint == intersection_point2) and sync_start:
 			robot1.waitMode = True
 
 	point_angle = angleToPoint(x, y, pathx[robot1.nextPoint]+robot1.offsetX, pathy[robot1.nextPoint]+robot1.offsetY)
@@ -141,8 +141,8 @@ def setStartValues():
 	global PI
 	PI = math.pi
 
-	global synch_robots
-	synch_robots = True
+	global sync_start
+	sync_start = True
 
 
 if __name__ == '__main__':
