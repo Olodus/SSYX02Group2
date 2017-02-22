@@ -35,7 +35,7 @@ class Robot(object):
 
 
 def setAngle(theta_curr,theta):
-    if math.fabs(theta_curr-theta)>10*PI/180:
+    if math.fabs(theta_curr-theta)>20*PI/180:
 		if theta_curr < theta:
 			if math.fabs(theta_curr - theta)<PI:
 				return 0.3
@@ -47,17 +47,17 @@ def setAngle(theta_curr,theta):
 			else:
 				return 0.3
 
-    elif 3*PI/180<=math.fabs(theta_curr-theta) and math.fabs(theta_curr-theta)<=8*PI/180:
+    elif 3*PI/180<=math.fabs(theta_curr-theta) and math.fabs(theta_curr-theta)<=20*PI/180:
 		if theta_curr < theta:
 			if math.fabs(theta_curr - theta)<PI:
-				return 0.1
+				return 0.05
 			else:
-				return -0.1
+				return -0.05
 		else:
 			if math.fabs(theta_curr - theta)<PI:
-				return -0.1
+				return -0.05
 			else:
-				return 0.1
+				return 0.05
 
     else:
 		return 0.0
