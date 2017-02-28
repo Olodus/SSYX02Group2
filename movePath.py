@@ -186,17 +186,18 @@ def simple_obj_func():
 
 def both_in_intersection(client0, client1):
 	print "Both in intersection"
-	client0.update_configuration({"trans_decel":1.0})
-	robot0.acc = -1.0
-	client1.update_configuration({"trans_accel":1.0})
-	robot1.acc = 1.0
+	acc = simple_obj_func()
+	client0.update_configuration({"trans_decel":math.fabs(acc[0]), "trans_accel":math.fabs(acc[0])})
+	robot0.acc = acc[0]
+	client1.update_configuration({"trans_decel":math.fabs(acc[1]), "trans_accel":math.fabs(acc[1])})
+	robot1.acc = acc[1]
 
 def outside_intersection(client0, client1):
 	print "No chance of crash, hopefully..."
-	client0.update_configuration({"trans_accel":1.0})
-	robot0.acc = 1.0
-	client1.update_configuration({"trans_accel":1.0})
-	robot1.acc = 1.0
+	client0.update_configuration({"trans_accel":max_acc})
+	robot0.acc = max_acc
+	client1.update_configuration({"trans_accel":max_acc})
+	robot1.acc = max_acc
 
 def run_controller():
 	rospy.init_node('oodometry', anonymous=True)
