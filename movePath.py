@@ -143,10 +143,15 @@ def callback1(data):
 	rospy.sleep(0.1)
 
 def calc_t(x,y,angle,v,a):
-	return nil
+	dist = distanceToPoint(x,y,0,0)
+	t = -(2*v)/a + math.sqrt(math.pow(v/a,2)+(2*dist)/a)
+	return t
 
 def calc_pos(time,x,y,angle,v,a):
-	return nil
+	x_new = a*math.pow(time,2)*math.cos(angle)/2 + v*t*math.cos(angle) + x
+	y_new = a*math.pow(time,2)*math.sin(angle)/2 + v*t*math.sin(angle) + y
+	pos = [x_new,y_new]
+	return pos
 
 def is_inside_collisionbox(x,y):
 	if x0+robot0.length/2 < x1+robot1.width/2:
@@ -163,17 +168,17 @@ def simple_obj_func():
 	else:
 		robot[0] = max_acc
 
-	t = calc_t(robot0.x,robot0.y,robot0.angle,robot0.vx,robot[0])
 	# Set robot1 acc
+	t = calc_t(robot0.x,robot0.y,robot0.angle,robot0.vx,robot[0])
 	robot[1] = max_acc
 	pos = calc_pos(t,robot1.x,robot1.y,robot1.vx,robot[1])
-	x = pos.x
-	y = pos.y
+	x = pos[0]
+	y = pos[1]
 	while not is_inside_collisionbox(x,y):
 		robot[1] = robot[1]-0.1
 		pos = calc_pos(t,robot1.x,robot1.y,robot1.vx,robot[1])
-		x = pos.x
-		y = pos.y
+		x = pos[0]
+		y = pos[1]
 
 	return robot
 
