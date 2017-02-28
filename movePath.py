@@ -23,8 +23,6 @@ class Robot(object):
 		self.waitMode = False
 		self.in_intersection = False
 		self.acc = 0.0
-		self.width = 0.5
-		self.length = 0.7
 		self.vx = 0.0
 		self.angle = 0.0
 
@@ -154,7 +152,7 @@ def calc_pos(time,x,y,angle,v,a):
 	return pos
 
 def is_inside_collisionbox(x,y):
-	if x0+robot0.length/2 < x1+robot1.width/2:
+	if x <= robot0.length:
 		return True
 
 # Simple function for avoiding collision
@@ -249,6 +247,11 @@ def setStartValues():
 	max_acc = 1.0
 	global min_acc
 	min_acc = -1.0
+	global c_box_w
+	c_box_w = 1.0
+	global c_box_l
+	c_box_l = 1.0
+
 
 
 if __name__ == '__main__':
