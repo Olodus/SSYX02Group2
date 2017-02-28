@@ -25,6 +25,7 @@ class Robot(object):
 		self.acc = 0.0
 		self.width = 0.5
 		self.length = 0.7
+		self.vx = 0.0
 
 	def publishTwist(self):
 		if not self.waitMode:
@@ -78,6 +79,8 @@ def callback0(data):
 	euler = tf.transformations.euler_from_quaternion(quart)
 	robot_angle = euler[2]
 
+	robot1.vx = data.twist.twist.linear.x
+
 	if distanceToPoint(robot0.x,robot0.y,pathx[robot0.nextPoint],pathy[robot0.nextPoint])<=0.2:
 		robot0.nextPoint= (robot0.nextPoint+1)%len(pathx)
 		if (robot0.nextPoint == intersection_point1 or robot0.nextPoint == intersection_point2):
@@ -112,6 +115,8 @@ def callback1(data):
 	euler = tf.transformations.euler_from_quaternion(quart)
 	robot_angle = euler[2]
 
+	robot1.vx = data.twist.twist.linear.x
+
 	if distanceToPoint(robot1.x,robot1.y,pathx[robot1.nextPoint],pathy[robot1.nextPoint])<=0.2:
 		robot1.nextPoint = (robot1.nextPoint+1)%len(pathx)
 		if (robot1.nextPoint == intersection_point1 or robot1.nextPoint == intersection_point2):
@@ -138,7 +143,7 @@ def callback1(data):
 
 def simple_obj_func():
 	robot = [0.0, 0.0]
-
+	#robot[0] =
 
 def both_in_intersection(client0, client1):
 	print "Both in intersection"
