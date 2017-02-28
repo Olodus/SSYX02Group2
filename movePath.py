@@ -96,9 +96,9 @@ def callback0(data):
 		robot0.twist.linear.x = 0.0
 	else:
 		if robot0.acc >= 0.0:
-			robot0.twist.linear.x = 0.3
+			robot0.twist.linear.x = max_speed
 		else:
-			robot0.twist.linear.x = 0.1
+			robot0.twist.linear.x = min_speed
 
 	robot0.publishTwist()
 	rospy.sleep(0.1)
@@ -129,14 +129,16 @@ def callback1(data):
 		robot1.twist.linear.x = 0.0
 	else:
 		if robot1.acc >= 0.0:
-			robot1.twist.linear.x = 0.3
+			robot1.twist.linear.x = max_speed
 		else:
-			robot1.twist.linear.x = 0.1
+			robot1.twist.linear.x = min_speed
 
 	robot1.publishTwist()
 	rospy.sleep(0.1)
 
-#def simple_obj_func():
+def simple_obj_func():
+	robot = [0.0, 0.0]
+
 
 def both_in_intersection(client0, client1):
 	print "Both in intersection"
@@ -195,6 +197,11 @@ def setStartValues():
 
 	global sync_robots
 	sync_robots = True
+
+	global max_speed
+	max_speed = 0.5
+	global min_speed
+	min_speed = 0.0
 
 
 if __name__ == '__main__':
