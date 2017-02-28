@@ -26,6 +26,7 @@ class Robot(object):
 		self.width = 0.5
 		self.length = 0.7
 		self.vx = 0.0
+		self.angle = 0.0
 
 	def publishTwist(self):
 		if not self.waitMode:
@@ -77,7 +78,7 @@ def callback0(data):
 	robot0.y = data.pose.pose.position.y
 	quart = (data.pose.pose.orientation.x, data.pose.pose.orientation.y, data.pose.pose.orientation.z, data.pose.pose.orientation.w)
 	euler = tf.transformations.euler_from_quaternion(quart)
-	robot_angle = euler[2]
+	robot0.angle = euler[2]
 
 	robot1.vx = data.twist.twist.linear.x
 
@@ -113,7 +114,7 @@ def callback1(data):
 	robot1.y = data.pose.pose.position.y+1.0
 	quart = (data.pose.pose.orientation.x, data.pose.pose.orientation.y, data.pose.pose.orientation.z, data.pose.pose.orientation.w)
 	euler = tf.transformations.euler_from_quaternion(quart)
-	robot_angle = euler[2]
+	robot1.angle = euler[2]
 
 	robot1.vx = data.twist.twist.linear.x
 
@@ -141,9 +142,41 @@ def callback1(data):
 	robot1.publishTwist()
 	rospy.sleep(0.1)
 
+def calc_t(x,y,angle,v,a):
+	return nil
+
+def calc_pos(time,x,y,angle,v,a):
+	return nil
+
+def is_inside_collisionbox(x,y):
+	if x0+robot0.length/2 < x1+robot1.width/2:
+		return True
+
+# Simple function for avoiding collision
+# Robot0 always sets to max speed and the other chooses a acc to avoid
 def simple_obj_func():
 	robot = [0.0, 0.0]
-	#robot[0] =
+
+	# Set robot0 acc
+	if robot0.vx >= max_speed:
+		robot[0] = 0.0
+	else:
+		robot[0] = max_acc
+
+	t = calc_t(robot0.x,robot0.y,robot0.angle,robot0.vx,robot[0])
+	# Set robot1 acc
+	robot[1] = max_acc
+	pos = calc_pos(t,robot1.x,robot1.y,robot1.vx,robot[1])
+	x = pos.x
+	y = pos.y
+	while not is_inside_collisionbox(x,y):
+		robot[1] = robot[1]-0.1
+		pos = calc_pos(t,robot1.x,robot1.y,robot1.vx,robot[1])
+		x = pos.x
+		y = pos.y
+
+	return robot
+
 
 def both_in_intersection(client0, client1):
 	print "Both in intersection"
@@ -207,6 +240,10 @@ def setStartValues():
 	max_speed = 0.5
 	global min_speed
 	min_speed = 0.0
+	global max_acc
+	max_acc = 1.0
+	global min_acc
+	min_acc = -1.0
 
 
 if __name__ == '__main__':
