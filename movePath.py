@@ -175,7 +175,7 @@ def simple_obj_func():
 	pos = calc_pos(t,robot1.x,robot1.y,robot1.vx,robot[1])
 	x = pos[0]
 	y = pos[1]
-	while not is_inside_collisionbox(x,y):
+	while is_inside_collisionbox(x,y):
 		robot[1] = robot[1]-0.1
 		pos = calc_pos(t,robot1.x,robot1.y,robot1.vx,robot[1])
 		x = pos[0]
