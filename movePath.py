@@ -18,8 +18,6 @@ class Robot(object):
 		self.nextPoint = startPoint
 		self.twist = Twist()
 		self.pub = rospy.Publisher("RosAria"+str(idNumber)+"/cmd_vel", Twist, queue_size=1)
-		self.offsetX = startX
-		self.offsetY = startY
 		self.x = startX
 		self.y = startY
 		self.waitMode = False
@@ -109,12 +107,12 @@ def callback1(data):
 	global robot1
 
 	robot1.x = data.pose.pose.position.x
-	robot1.y = data.pose.pose.position.y
+	robot1.y = data.pose.pose.position.y+1.0
 	quart = (data.pose.pose.orientation.x, data.pose.pose.orientation.y, data.pose.pose.orientation.z, data.pose.pose.orientation.w)
 	euler = tf.transformations.euler_from_quaternion(quart)
 	robot_angle = euler[2]
 
-	if distanceToPoint(robot1.x,robot1.y,pathx[robot1.nextPoint]+robot1.offsetX,pathy[robot1.nextPoint]+robot1.offsetY)<=0.2:
+	if distanceToPoint(robot1.x,robot1.y,pathx[robot1.nextPoint],pathy[robot1.nextPoint])<=0.2:
 		robot1.nextPoint = (robot1.nextPoint+1)%len(pathx)
 		if (robot1.nextPoint == intersection_point1 or robot1.nextPoint == intersection_point2):
 			robot1.in_intersection = True
@@ -124,7 +122,7 @@ def callback1(data):
 		else:
 			robot1.in_intersection = False
 
-	point_angle = angleToPoint(robot1.x, robot1.y, pathx[robot1.nextPoint]+robot1.offsetX, pathy[robot1.nextPoint]+robot1.offsetY)
+	point_angle = angleToPoint(robot1.x, robot1.y, pathx[robot1.nextPoint], pathy[robot1.nextPoint])
 	ang = setAngle(robot_angle, point_angle)
 	robot1.twist.angular.z = ang
 	if math.fabs(ang) > 0.2:
