@@ -92,7 +92,7 @@ def callback0(data):
 			print "robot0 not in intersection"
 
 	point_angle = angleToPoint(robot0.x, robot0.y, pathx[robot0.nextPoint], pathy[robot0.nextPoint])
-	ang = setAngle(robot_angle, point_angle)
+	ang = setAngle(robot0.angle, point_angle)
 	robot0.twist.angular.z = ang
 	if math.fabs(ang) > 0.2:
 		robot0.twist.linear.x = 0.0
@@ -109,7 +109,7 @@ def callback1(data):
 	global robot1
 
 	robot1.x = data.pose.pose.position.x
-	robot1.y = data.pose.pose.position.y+1.0
+	robot1.y = data.pose.pose.position.y-1.0
 	quart = (data.pose.pose.orientation.x, data.pose.pose.orientation.y, data.pose.pose.orientation.z, data.pose.pose.orientation.w)
 	euler = tf.transformations.euler_from_quaternion(quart)
 	robot1.angle = euler[2]
@@ -127,7 +127,7 @@ def callback1(data):
 			robot1.in_intersection = False
 
 	point_angle = angleToPoint(robot1.x, robot1.y, pathx[robot1.nextPoint], pathy[robot1.nextPoint])
-	ang = setAngle(robot_angle, point_angle)
+	ang = setAngle(robot1.angle, point_angle)
 	robot1.twist.angular.z = ang
 	if math.fabs(ang) > 0.2:
 		robot1.twist.linear.x = 0.0
