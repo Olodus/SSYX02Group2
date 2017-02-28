@@ -25,6 +25,8 @@ class Robot(object):
 		self.waitMode = False
 		self.in_intersection = False
 		self.acc = 0.0
+		self.width = 0.5
+		self.length = 0.7
 
 	def publishTwist(self):
 		if not self.waitMode:
