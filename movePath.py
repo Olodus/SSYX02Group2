@@ -140,9 +140,9 @@ def callback1(data):
 	robot1.publishTwist()
 	rospy.sleep(0.1)
 
-def calc_t(x,y,angle,v,a):
-	dist = distanceToPoint(x,y,0,0)
-	t = -(2*v)/a + math.sqrt(math.pow(v/a,2)+(2*dist)/a)
+def calc_t(x,y,v):
+	dist = distanceToPoint(x,y,0.0,0.0)
+	t = dist/v
 	return t
 
 def calc_pos(time,x,y,angle,v,a):
@@ -166,20 +166,28 @@ def simple_obj_func():
 	# Set robot0 acc
 	if robot0.vx >= max_speed:
 		robot[0] = 0.0
-	else:
-		robot[0] = max_acc
 
-	# Set robot1 acc
-	t = calc_t(robot0.x,robot0.y,robot0.angle,robot0.vx,robot[0])
-	robot[1] = max_acc
-	pos = calc_pos(t,robot1.x,robot1.y,robot1.vx,robot[1])
-	x = pos[0]
-	y = pos[1]
-	while is_inside_collisionbox(x,y):
-		robot[1] = robot[1]-0.1
-		pos = calc_pos(t,robot1.x,robot1.y,robot1.vx,robot[1])
+		# Set robot1 acc
+		t = calc_t(robot0.x,robot0.y,robot0.vx)
+		t = t + 0.5
+		if t > 0:
+			dist = distanceToPoint(robot1.x,robot1.y,0.0,0.0)
+			robot[1] = -(2.0*robot1.vx)/t+2.0*dist/(math.pow(t,2))
+		else:
+			robot[1] = 0.0
+		'''
+		pos = calc_pos(t,robot1.x,robot1.y,robot1.angle,robot1.vx,robot[1])
 		x = pos[0]
 		y = pos[1]
+		while is_inside_collisionbox(x,y):
+			robot[1] = robot[1]-0.1
+			pos = calc_pos(t,robot1.x,robot1.y,robot1.vx,robot[1])
+			x = pos[0]
+			y = pos[1]
+			'''
+	else:
+		robot[0] = max_acc
+		robot[1] = max_acc
 
 	return robot
 
