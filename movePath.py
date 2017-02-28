@@ -152,8 +152,11 @@ def calc_pos(time,x,y,angle,v,a):
 	return pos
 
 def is_inside_collisionbox(x,y):
-	if x <= robot0.length:
-		return True
+	if x <= c_box_w/2 and x >= -c_box_w/2:
+		if y <= c_box_l/2 and y >= -c_box_l/2:
+			return True
+
+	return False
 
 # Simple function for avoiding collision
 # Robot0 always sets to max speed and the other chooses a acc to avoid
