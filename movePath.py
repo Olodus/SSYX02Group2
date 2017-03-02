@@ -78,7 +78,7 @@ def callback0(data):
 	euler = tf.transformations.euler_from_quaternion(quart)
 	robot0.angle = euler[2]
 
-	robot1.vx = data.twist.twist.linear.x
+	robot0.vx = data.twist.twist.linear.x
 
 	if distanceToPoint(robot0.x,robot0.y,pathx[robot0.nextPoint],pathy[robot0.nextPoint])<=0.2:
 		robot0.nextPoint= (robot0.nextPoint+1)%len(pathx)
@@ -94,10 +94,14 @@ def callback0(data):
 	point_angle = angleToPoint(robot0.x, robot0.y, pathx[robot0.nextPoint], pathy[robot0.nextPoint])
 	ang = setAngle(robot0.angle, point_angle)
 	robot0.twist.angular.z = ang
-	if math.fabs(ang) > 0.2:
+	if distanceToPoint(robot0.x,robot0.y,pathx[robot0.nextPoint],pathy[robot0.nextPoint]) < 1.0:
+		robot0.twist.linear.x = conf_speed
+	elif math.fabs(ang) > 0.2:
 		robot0.twist.linear.x = 0.0
 	else:
-		if robot0.acc >= 0.0:
+		if robot0.acc <= 0.0001 and robot0.acc > -0.0001:
+			robot0.twist.linear.x = conf_speed
+		elif robot0.acc >= 0.0:
 			robot0.twist.linear.x = max_speed
 		else:
 			robot0.twist.linear.x = min_speed
@@ -129,10 +133,14 @@ def callback1(data):
 	point_angle = angleToPoint(robot1.x, robot1.y, pathx[robot1.nextPoint], pathy[robot1.nextPoint])
 	ang = setAngle(robot1.angle, point_angle)
 	robot1.twist.angular.z = ang
+	if distanceToPoint(robot1.x,robot1.y,pathx[robot1.nextPoint],pathy[robot1.nextPoint]) < 1.0:
+		robot1.twist.linear.x = conf_speed
 	if math.fabs(ang) > 0.2:
 		robot1.twist.linear.x = 0.0
 	else:
-		if robot1.acc >= 0.0:
+		if robot1.acc <= 0.0001 and robot1.acc > -0.0001:
+			robot1.twist.linear.x = robot1.vx
+		elif robot1.acc >= 0.0:
 			robot1.twist.linear.x = max_speed
 		else:
 			robot1.twist.linear.x = min_speed
@@ -161,19 +169,26 @@ def is_inside_collisionbox(x,y):
 # Simple function for avoiding collision
 # Robot0 always sets to max speed and the other chooses a acc to avoid
 def simple_obj_func():
-	robot = [0.0, 0.0]
-
+	global once
+	robot = [robot0.acc, robot1.acc]
 	# Set robot0 acc
-	if robot0.vx >= max_speed:
+	if not once:
+		robot = [0.0, 0.0]
+	if robot0.vx >= conf_speed and not once:
 		robot[0] = 0.0
-
+		print "Reached max speed"
+		once = True
 		# Set robot1 acc
 		t = calc_t(robot0.x,robot0.y,robot0.vx)
-		t = t + 0.5
-		if t > 0:
-			dist = distanceToPoint(robot1.x,robot1.y,0.0,0.0)
+		t = t - 4.0
+		print t
+		dist = distanceToPoint(robot1.x,robot1.y,0.0,0.0)
+		if max_speed*t < dist:
+			t = t + 8.0
+		if robot1.x < 0 and robot1.y < 0:
 			robot[1] = -(2.0*robot1.vx)/t+2.0*dist/(math.pow(t,2))
 		else:
+			print "Have passed intersection"
 			robot[1] = 0.0
 		'''
 		pos = calc_pos(t,robot1.x,robot1.y,robot1.angle,robot1.vx,robot[1])
@@ -185,9 +200,9 @@ def simple_obj_func():
 			x = pos[0]
 			y = pos[1]
 			'''
-	else:
-		robot[0] = max_acc
-		robot[1] = max_acc
+	elif not once:
+		robot[0] = 0.2
+		robot[1] = 0.2
 
 	return robot
 
@@ -199,13 +214,19 @@ def both_in_intersection(client0, client1):
 	robot0.acc = acc[0]
 	client1.update_configuration({"trans_decel":math.fabs(acc[1]), "trans_accel":math.fabs(acc[1])})
 	robot1.acc = acc[1]
+	print "acc r0: " + str(robot0.acc)
+	print "acc r1: " + str(robot1.acc)
+	print "vx r0: " + str(robot0.vx)
+	print "vx r1: " + str(robot1.vx)
 
 def outside_intersection(client0, client1):
 	print "No chance of crash, hopefully..."
-	client0.update_configuration({"trans_accel":max_acc})
+	client0.update_configuration({"trans_decel":max_acc, "trans_accel":max_acc})
 	robot0.acc = max_acc
-	client1.update_configuration({"trans_accel":max_acc})
+	client1.update_configuration({"trans_decel":max_acc, "trans_accel":max_acc})
 	robot1.acc = max_acc
+	global once
+	once = False
 
 def run_controller():
 	rospy.init_node('oodometry', anonymous=True)
@@ -227,7 +248,7 @@ def run_controller():
 		else:
 			outside_intersection(client0, client1)
 
-		rospy.sleep(1.0)
+		rospy.sleep(0.1)
 
 def setStartValues():
 	global robot0
@@ -236,7 +257,7 @@ def setStartValues():
 	robot1 = Robot(1,4,0,1)
 
 	global pathx
-	a=2
+	a=5
 	pathx = (a, a, 0, 0, -a, -a)
 	global pathy
 	pathy = (0, -a, -a, a, a, 0)
@@ -252,17 +273,22 @@ def setStartValues():
 	sync_robots = True
 
 	global max_speed
-	max_speed = 0.5
+	max_speed = 0.6
 	global min_speed
 	min_speed = 0.0
 	global max_acc
 	max_acc = 1.0
 	global min_acc
 	min_acc = -1.0
+	global conf_speed
+	conf_speed = 0.2
 	global c_box_w
 	c_box_w = 1.0
 	global c_box_l
 	c_box_l = 1.0
+
+	global once
+	once = False
 
 
 
