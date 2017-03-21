@@ -9,7 +9,7 @@ from robotclient.msg import Floats
 from robotclient.srv import *
 
 
-def save_coordinates(n,filenumber):
+def save_coordinates(n):
     """
     :return: if not end node, measures position with UWB-radios and returns it. If end, returns current position.
     """
@@ -54,7 +54,7 @@ def save_coordinates(n,filenumber):
     cov = np.cov(xarr,yarr)
     covx = np.cov(xarr)
     covy = np.cov(yarr)
-
+    '''
     with open("/home/erikhigbie/TheTitans/robot_ws/src/robotclient/src/measurements"+str(filenumber)+".csv", "wb") as f:
         writer = csv.writer(f)
         writer.writerow(xarr)
@@ -62,7 +62,7 @@ def save_coordinates(n,filenumber):
         writer.writerow([xmean, ymean])
         writer.writerow(cov[0,:])
         writer.writerow(cov[1,:])
-
+    '''
     #pingTime= stopTime-startTime
     #print("Time" + str(pingTime))
     print("mean in y:" + str(ymean))
