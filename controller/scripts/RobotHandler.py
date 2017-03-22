@@ -55,13 +55,13 @@ class RobotHandler(object):
 
     def update_state(self,data):
 		self.state = data
-
+		self.run()
         #self.x = data.pose.pose.x
 		#self.y = data.pose.pose.y
 		#self.vx = data.twist.linear.x
 
 	def get_state(self):
-
+		return {'state': self.state}
 
 	def run(self):
 		if executing:
@@ -73,60 +73,77 @@ class RobotHandler(object):
 			print "Robot " + str(self.id_nbr) + ": Is not doing anything"
 
 	def is_ready(self):
-		return not self.executing
+		return {'robot_ready': not self.executing}
 
-	def aim_at_point(self,point):
-		if self.executing:
-			error = "Robot " + str(self.id_nbr) + ": Is already doing something"
-			print error
-			return error
-		else:
-			executing = True
-
-
-	def go_to_point(point):
+	def aim_at_point(self, req):
 		if self.executing:
 			error = "Error: Robot " + str(self.id_nbr) + ": Is already doing something"
-			print error
-			return error
-		elif self.moving:
-			error = "Error: Robot " + str(self.id_nbr) + ": Is already moving"
-			print error
-			return error
+			return {'succeded': False, 'error_msg': error}
 		else:
-			executing = True
+			self.executing = True
+			self.mission = 2
+			self.mission_var = req.point
+			msg = "Robot " + str(self.id_nbr) + ": Will aim itself towards given point"
+			return {'succeded': True, 'error_msg': msg}
 
 
-	def follow_path(self,points):
+
+	def go_to_point(self, req):
+		if self.executing:
+			error = "Error: Robot " + str(self.id_nbr) + ": Is already doing something"
+			return {'succeded': False, 'error_msg': error}
+		else:
+			self.executing = True
+			self.mission = 0
+			self.mission_var = req.point
+			msg = "Robot " + str(self.id_nbr) + ": Will go to given point"
+			return {'succeded': True, 'error_msg': msg}
+
+
+	def follow_path(self, req):
 		if self.executing:
 			error = "Robot " + str(self.id_nbr) + ": Is already doing something"
-			print error
-			return error
+			return {'succeded': False, 'error_msg': error}
 		else:
-			executing = True
-			print "Robot " + str(self.id_nbr) + ": Following given path
+			self.executing = True
+			self.mission = 1
+			self.mission_var = req.path
+			msg = "Robot " + str(self.id_nbr) + ": Will follow given path"
+			return {'succeded': True, 'error_msg': msg}
 
 	# Is done when it reach the velocity
-	def set_speed(self,velocity):
+	def set_speed(self, req):
 		if self.executing:
-			error = "Robot " + str(self.id_nbr) + ": Is already doing something"
-			print error
-			return error
+			error = "Robot " + str(self.id_nbr) + ": Can't set speed since already on a mission (use stop to abort mission)"
+			return {'succeded': False, 'error_msg': error}
 		else:
-			print "Robot " + str(self.id_nbr) + ": Moving forward with speed: " + str(velocity)
+			self.executing = True
 			self.moving = True
+			self.mission = 3
+			self.mission_var = req.speed
+			msg = "Robot " + str(self.id_nbr) + ": Will set speed to " + str(req.speed)
+			return {'succeded': True, 'error_msg': msg}
 
-	def stop():
+	def stop(self):
 		if self.executing:
-			error = "Robot " + str(self.id_nbr) + ": Is already doing something"
-			print error
-			return error
+			error = "Robot " + str(self.id_nbr) + ": Stopped executing it's mission"
+			self.mission = -1
+			return {'succeded': True, 'error_msg': error}
 		else:
-			print "Robot " + str(self.id_nbr) + ": Stopping"
+			msg = "Robot " + str(self.id_nbr) + ": Can't stop since it wasn't executing a mission"
+			return {'succeded': False, 'error_msg': msg}
 
 
-	def set_acc(self,acc):
-		self.acc = acc
+	def set_acc(self, req):
+		if self.executing:
+			error = "Robot " + str(self.id_nbr) + ": Can't set acc since already on a mission (use stop to abort mission)"
+			return {'succeded': False, 'error_msg': error}
+		else:
+			self.moving = True
+			self.mission = 4
+			self.mission_var = req.acc
+			msg = "Robot " + str(self.id_nbr) + ": Will set acc to " + str(req.acc)
+			return {'succeded': True, 'error_msg': msg}
 
 
 	#Should only be used from inside this class. Never called from outside.
