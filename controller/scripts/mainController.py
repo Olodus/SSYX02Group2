@@ -2,10 +2,12 @@
 # Only supports 1 or 2 robots for now
 def simulator_setup(nbr_of_robots, start_positions):
     # Create pose handlers
-     # subscribe them to pose
+     # subscribe pose handlers to Rosaria pose
      # give correct offset if several
+    # Create KalmanFilters
+     # subscribe them to pose handlers
     # Create robot handlers
-     # make them subscribe to correct PoseHandler
+     # subscribe them to KalmanFilter
      # make robots move towards their startPoint
 
     robots = [nbr_of_robots]
@@ -16,15 +18,17 @@ def simulator_setup(nbr_of_robots, start_positions):
             offsetY = 1.0
 
         h = PoseHandler(i,offsetX,offsetY)
+        h_sub = rospy.Subscriber("RosAria"+str(i)+"/pose", Odometry, h.measure)
+        kf = KalmanFilter(i)
+        kf_sub = rospy.Subscriber("Sensor"+str(i)+"/measurement", Odometry, kf.new_measurement)
         robots[i] = RobotHandler(i)
-        robots[i].go_to_point(start_positions[i])
-        robots[i].run()
+        r_sub = rospy.Subscriber("Filter"+str(i)+"/prediction", Odometry, robots[i].update_state)
 
     return robots
 
 def real_world_setup(nbr_of_robots):
     # Create UWBHandlers
-     # subscribe them to pose
+    # Create KalmanFilters
     # Create RobotHandlers
     # Make them subscribe to UWB
     # Make them move towards start_positions

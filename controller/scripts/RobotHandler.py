@@ -1,5 +1,6 @@
 
 import math
+import rospy
 
 # Missions
 #  -1 : No mission
