@@ -67,8 +67,9 @@ class RobotHandler(object):
     def update_state(self,data):
 		self.state = data
 		self.run()
-		self.publish_twist()
-		self.check_if_mission_done()
+		if self.mission != -1:
+			self.publish_twist()
+			self.check_if_mission_done()
 
 	def run(self):
 		self.twist = Twist()
@@ -92,20 +93,17 @@ class RobotHandler(object):
 		if self.mission = 0:
 			# Go to point
 			if self.length_to_point <= 0.1:
-				self.executing = False
-				self.mission = -1
+				self.mission = 5
 		elif self.mission = 1:
 			# Follow path
 			if self.path_index = self.path.length:
 				length =
 				if length <= 0.1:
-					self.executing = False
-					self.mission = -1
+					self.mission = 5
 		elif self.mission = 2:
 			# Aim at point
 			if self.angle_to_point <= 0.05:
-				self.executing = False
-				self.mission = -1
+				self.mission = 5
 		elif self.mission = 3:
 			# Set speed
 			if self.state.twist.twist.linear.x - desired_speed >= 0.001:
@@ -118,7 +116,7 @@ class RobotHandler(object):
 			self.moving = True
 		elif self.mission = 5:
 			# Stop
-			if self.state.twist.twist.linear.x <= 0.0001:
+			if self.state.twist.twist.linear.x <= 0.0001 and self.state.twist.twist.angular.z <= 0.001:
 				self.executing = False
 				self.mission = -1
 
