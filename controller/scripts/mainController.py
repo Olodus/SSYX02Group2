@@ -46,7 +46,7 @@ def real_world_setup(nbr_of_robots):
 
 if __name__ == '__main__':
     try:
-        rospy.init_node('controller', anonymous=True)
+        rospy.init_node('Controller', anonymous=True)
 
         super_problem = Problem()
         problem = PresetationProblem(super_problem)
