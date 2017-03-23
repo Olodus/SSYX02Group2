@@ -1,4 +1,6 @@
 
+import math
+
 # Missions
 #  -1 : No mission
 #   0 : Go to Point
@@ -66,12 +68,12 @@ class RobotHandler(object):
 
     def update_state(self,data):
 		self.state = data
-		self.run()
 		if self.mission != -1:
+			self.do_mission()
 			self.publish_twist()
 			self.check_if_mission_done()
 
-	def run(self):
+	def do_mission(self):
 		self.twist = Twist()
 		if self.mission = 0:
 			do_go_to_point()
@@ -112,7 +114,7 @@ class RobotHandler(object):
 				self.moving = True
 		elif self.mission = 4:
 			# Set acc
-			# dont need to do something right
+			# dont need to do something right?
 			self.moving = True
 		elif self.mission = 5:
 			# Stop
@@ -202,13 +204,18 @@ class RobotHandler(object):
 	def do_go_to_point(self):
 		x = self.state.pose.pose.position.x
 		y = self.state.pose.pose.position.y
-		robot_angle = self.state.pose.pose.orientation #TODO transform from quaternion
 		pointx = self.go_point.x
 		pointy = self.go_point.y
-		angle = math.arctan2(x-pointx,y-pointy)
-		self.length_to_point =
+		angle = math.atan2(x-pointx,y-pointy)
+		quart = (self.state.pose.pose.orientation.x, self.state.pose.pose.orientation.y, self.state.pose.pose.orientation.z, self.state.pose.pose.orientation.w)
+	    euler = tf.transformations.euler_from_quaternion(quart)
+		robot_angle = euler[2]
+		self.angle_to_point = robot_angle - angle
+		angle_left = self.angle_to_point
+		self.length_to_point = math.sqrt(math.pow(pointx-x,2)+math.pow(pointy-y,2))
 		length = self.length_to_point
-		if angle-robot_angle >= 0.1
+		
+		if math.fabs(angle_left) >= 0.1
 			self.aim_point = self.go_point
 			do_aim_at_point()
 		elif length >= 1.0:
