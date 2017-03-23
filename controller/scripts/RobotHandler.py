@@ -214,7 +214,7 @@ class RobotHandler(object):
 		angle_left = self.angle_to_point
 		self.length_to_point = math.sqrt(math.pow(pointx-x,2)+math.pow(pointy-y,2))
 		length = self.length_to_point
-		
+
 		if math.fabs(angle_left) >= 0.1
 			self.aim_point = self.go_point
 			do_aim_at_point()
@@ -245,8 +245,7 @@ class RobotHandler(object):
 		self.twist.linear.x = 0.0
 
 
-	#Should only be used from inside this class. Never called from outside.
-	#Yea I know I should have hid it in some way but I don't get how Python does components...
+
 	def emulate_acc(self):
 		#TODO Create acc implementation that handles accual time not just 0.1 sec
 		curr_speed = self.state.twist.twist.linear.x
