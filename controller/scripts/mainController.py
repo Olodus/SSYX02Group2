@@ -22,16 +22,26 @@ def simulator_setup(nbr_of_robots, start_positions):
         kf = KalmanFilter(i)
         kf_sub = rospy.Subscriber("Sensor"+str(i)+"/measurement", Odometry, kf.new_measurement)
         robots[i] = RobotHandler(i)
-        r_sub = rospy.Subscriber("Filter"+str(i)+"/prediction", Odometry, robots[i].update_state)
+        r_sub = rospy.Subscriber("Filter"+str(i)+"/state", Odometry, robots[i].update_state)
 
     return robots
 
 def real_world_setup(nbr_of_robots):
     # Create UWBHandlers
+     # This is done from the commandline
     # Create KalmanFilters
+     # Subscribe to UWBHandlers
     # Create RobotHandlers
-    # Make them subscribe to UWB
-    # Make them move towards start_positions
+     # Suscribe them to KalmanFilters
+     # Make them move towards start_positions
+
+    robots = [nbr_of_robots]
+    for i in range(0,nbr_of_robots-1):
+        kf = KalmanFilter(i)
+        kf_sub = rospy.Subscriber("Sensor"+str(i)+"/measurement", Odometry, kf.new_measurement)
+        robots[i] = RobotHandler(i)
+        r_sub = rospy.Subscriber("Filter"+str(i)+"/state", Odometry, robots[i].update_state)
+
     return robots
 
 if __name__ == '__main__':
