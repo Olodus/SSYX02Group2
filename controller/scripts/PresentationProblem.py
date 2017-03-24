@@ -1,3 +1,5 @@
+import geometry_msgs/Point
+
 class PresentationProblem(object):
     def __init__():
         self.nbr_of_robots = 1
@@ -18,10 +20,12 @@ class PresentationProblem(object):
             print "Gave problem wrong number of robots"
             #Shoud probably return an error here or someting
         else:
-            self.p.robots = robots
+            self.robots = robots
             self.robot = robots[0]
 
-            self.p.wait_til_ready()
+            set_up_services()
+
+            self.wait_til_ready()
 
             #aim the robot at a ok point
 
