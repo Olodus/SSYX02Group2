@@ -29,7 +29,7 @@ class UWBPoseHandler(object):
         self.measurement.pose.pose.orientation = data.pose.pose.orientation
         self.measurement.twist = data.twist
 
-        # The rest is taken from UWB
+        # The rest is taken from UWB   as of now takes a mean of 10 measurements
         xarr = np.array([], dtype=np.float32)
         yarr = np.array([], dtype=np.float32)
         i = 0
