@@ -33,6 +33,7 @@ class UWBPoseHandler(object):
         xarr = np.array([], dtype=np.float32)
         yarr = np.array([], dtype=np.float32)
         i = 0
+        n = 10
         error_count = 0
         while i < n and error_count < 100:
             print("remaining time: " + str((n - i) * 0.14/60))
