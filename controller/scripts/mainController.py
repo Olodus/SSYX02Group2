@@ -48,14 +48,14 @@ if __name__ == '__main__':
     try:
         rospy.init_node('Controller', anonymous=True)
 
-        super_problem = Problem()
-        problem = PresetationProblem(super_problem)
-        nr = super_problem.numberOfRobots()
-        start = super_problem.get_start_positions()
+        problem = PresetationProblem()
+        nr = problem.nbr_of_robots
+        start = problem.get_start_positions()
 
         robots = simulator_setup(nr, start)
         #robots = real_world_setup(nr)
 
         problem.run(robots)
+        
     except rospy.ROSInterruptException:
         pass

@@ -1,8 +1,17 @@
-class PresetationProblem(object):
-    def __init__(p):
-        self.p = p
-        self.p.nbr_of_robots = 1
-        self.p.start_position = [Point()]
+class PresentationProblem(object):
+    def __init__():
+        self.nbr_of_robots = 1
+        self.start_position = [Point()]
+        self.robots = []
+
+    def numberOfRobots(self):
+        return self.nbr_of_robots
+
+    def get_start_positions(self):
+        return self.start_position
+
+    def wait_til_ready(self):
+        # loop through and see if all robots are ready
 
     def run(self, robots):
         if not robots.length==nbr_of_robots:
