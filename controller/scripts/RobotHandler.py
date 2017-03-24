@@ -1,6 +1,12 @@
-
+from std_msgs.msg import Float32
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Point, Quaternion
+import tf
+import dynamic_reconfigure.client
 import math
 import rospy
+
 
 # Missions
 #  -1 : No mission
@@ -70,58 +76,52 @@ class RobotHandler(object):
     def update_state(self,data):
 		self.state = data
 		if self.mission != -1:
-			self.do_mission()
+			mission_done = self.do_mission()
 			self.publish_twist()
-			self.check_if_mission_done()
+			if mission_done:
+				self.end_mission()
 
 	def do_mission(self):
 		self.twist = Twist()
-		if self.mission = 0:
-			do_go_to_point()
-		elif self.mission = 1:
-			do_follow_path()
-		elif self.mission = 2:
-			do_aim_at_point()
-		elif self.mission = 3:
-			do_set_speed()
-		elif self.mission = 4:
+		if self.mission == 0:
+			return do_go_to_point()
+		elif self.mission == 1:
+			return do_follow_path()
+		elif self.mission == 2:
+			return do_aim_at_point()
+		elif self.mission == 3:
+			return do_set_speed()
+		elif self.mission == 4:
 			do_set_acc()
-		elif self.mission = 5:
-			do_stop()
+		elif self.mission == 5:
+			return do_stop()
 
 	def publish_twist(self):
 		self.pub.publish(self.twist)
 
-	def check_if_mission_done(self):
+	def end_mission(self):
 		if self.mission = 0:
 			# Go to point
-			if self.length_to_point <= 0.1:
-				self.mission = 5
+			self.mission = 5
 		elif self.mission = 1:
 			# Follow path
-			if self.path_index = self.path.length:
-				length =
-				if length <= 0.1:
-					self.mission = 5
+			self.mission = 5
 		elif self.mission = 2:
 			# Aim at point
-			if self.angle_to_point <= 0.05:
-				self.mission = 5
+			self.mission = 5
 		elif self.mission = 3:
 			# Set speed
-			if self.state.twist.twist.linear.x - desired_speed >= 0.001:
-				self.executing = False
-				self.mission = -1
-				self.moving = True
+			self.executing = False
+			self.mission = -1
+			self.moving = True
 		elif self.mission = 4:
 			# Set acc
 			# dont need to do something right?
 			self.moving = True
 		elif self.mission = 5:
 			# Stop
-			if self.state.twist.twist.linear.x <= 0.0001 and self.state.twist.twist.angular.z <= 0.001:
-				self.executing = False
-				self.mission = -1
+			self.executing = False
+			self.mission = -1
 
 
 	def get_state(self):
@@ -201,49 +201,121 @@ class RobotHandler(object):
 			msg = "Robot " + str(self.id_nbr) + ": Will set acc to " + str(req.acc)
 			return {'succeded': True, 'error_msg': msg}
 
+	####### Do Missions ########
+	# All do methods return True if they are done
+	# This way all do methods can call other do methods to do part of their job
+	# without having to check their "done test"
 
 	def do_go_to_point(self):
 		x = self.state.pose.pose.position.x
 		y = self.state.pose.pose.position.y
 		pointx = self.go_point.x
 		pointy = self.go_point.y
+
+		self.length_to_point = math.sqrt(math.pow(pointx-x,2)+math.pow(pointy-y,2))
+		length = self.length_to_point
+
+		self.aim_point = self.go_point
+		if not do_aim_at_point()
+			return False
+		elif length >= 1.0:
+			self.desired_speed = 0.3
+			self.do_set_speed()
+			return False
+		elif length >= 0.5:
+			self.desired_speed = 0.2
+			self.do_set_speed()
+			#small_steer()
+			return False
+		elif length >= 0.25:
+			self.desired_speed = 0.1
+			self.do_set_speed()
+			return False
+		elif length >= 0.1:
+			return True
+
+	def do_follow_path(self):
+		if self.path_index == len(self.path):
+			return True
+		else:
+			self.go_point = self.path[self.path_index]
+			if self.do_go_to_point():
+				self.path_index++
+			return False
+
+	def do_aim_at_point(self):
+		x = self.state.pose.pose.position.x
+		y = self.state.pose.pose.position.y
+		pointx = self.aim_point.x
+		pointy = self.aim_point.y
 		angle = math.atan2(x-pointx,y-pointy)
 		quart = (self.state.pose.pose.orientation.x, self.state.pose.pose.orientation.y, self.state.pose.pose.orientation.z, self.state.pose.pose.orientation.w)
 	    euler = tf.transformations.euler_from_quaternion(quart)
 		robot_angle = euler[2]
 		self.angle_to_point = robot_angle - angle
-		angle_left = self.angle_to_point
-		self.length_to_point = math.sqrt(math.pow(pointx-x,2)+math.pow(pointy-y,2))
-		length = self.length_to_point
 
-		if math.fabs(angle_left) >= 0.1
-			self.aim_point = self.go_point
-			do_aim_at_point()
-		elif length >= 1.0:
-			desired_speed = 0.3
-			do_set_speed()
-		elif length >= 0.5:
-			desired_speed = 0.2
-			do_set_speed()
-			small_steer()
-		elif length >= 0.25:
-			desired_speed = 0.1
-			do_set_speed()
-		elif length >= 0.1:
-			do_stop()
+		# If we would make all this into a P regulator p ~= 2.0/PI probably
 
-	def do_follow_path(self):
-
-
-	def do_aim_at_point(self):
+        if math.fabs(self.angle_to_point)>20*math.PI/180:
+			if robot_angle < angle:
+				if math.fabs(self.angle_to_point)<math.PI:
+					self.twist.angular.z = 0.3
+					return False
+				else:
+					self.twist.angular.z = -0.3
+					return False
+			else:
+				if math.fabs(self.angle_to_point)<math.PI:
+					self.twist.angular.z = -0.3
+					return False
+				else:
+					self.twist.angular.z = 0.3
+					return False
+    	elif 10*math.PI/180<=math.fabs(self.angle_to_point) and math.fabs(self.angle_to_point)<=20*math.PI/180:
+			if robot_angle < angle:
+				if math.fabs(self.angle_to_point)<math.PI:
+					self.twist.angular.z = 0.1
+					return False
+				else:
+					self.twist.angular.z = -0.1
+					return False
+			else:
+				if math.fabs(self.angle_to_point)<math.PI:
+					self.twist.angular.z = -0.1
+					return False
+				else:
+					self.twist.angular.z = 0.1
+					return False
+		elif 0.5*math.PI/180<=math.fabs(self.angle_to_point) and math.fabs(self.angle_to_point)<=10*math.PI/180:
+			if robot_angle < angle:
+				if math.fabs(self.angle_to_point)<math.PI:
+					self.twist.angular.z = 0.01
+					return False
+				else:
+					self.twist.angular.z = -0.01
+					return False
+			else:
+				if math.fabs(self.angle_to_point)<math.PI:
+					self.twist.angular.z = -0.01
+					return False
+				else:
+					self.twist.angular.z = 0.01
+					return False
+    	else:
+			self.twist.angular.z = 0.0
+			return True
 
 	def do_set_speed(self):
-		self.twist.linear.x = desired_speed
+		self.twist.linear.x = self.desired_speed
+		return math.fabs(self.state.twist.twist.linear.x - self.desired_speed) <= 0.001
 
 	def do_set_acc(self):
+		self.emulate_acc()
 
 	def do_stop(self):
 		self.twist.linear.x = 0.0
+		self.twist.angular.z = 0.0
+		return math.fabs(self.state.twist.twist.linear.x) <= 0.001 and math.fabs(self.state.twist.twist.angular.z) <= 0.001
 
 
 

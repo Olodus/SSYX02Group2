@@ -10,7 +10,7 @@ def simulator_setup(nbr_of_robots, start_positions):
      # subscribe them to KalmanFilter
      # make robots move towards their startPoint
 
-    robots = [nbr_of_robots]
+    robots = []
     for i in range(0,nbr_of_robots-1):
         offsetX = 0.0
         offsetY = 0.0
@@ -35,7 +35,7 @@ def real_world_setup(nbr_of_robots):
      # Suscribe them to KalmanFilters
      # Make them move towards start_positions
 
-    robots = [nbr_of_robots]
+    robots = []
     for i in range(0,nbr_of_robots-1):
         kf = KalmanFilter(i)
         kf_sub = rospy.Subscriber("Sensor"+str(i)+"/measurement", Odometry, kf.new_measurement)
