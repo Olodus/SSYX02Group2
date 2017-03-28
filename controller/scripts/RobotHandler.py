@@ -277,7 +277,7 @@ class Robot(object):
         rospy.init_node('Robot'+str(id_nbr))
         self.id_nbr = id_nbr
         self.name = 'Robot'+str(id_nbr) #TODO replace all places name could be used instead
-        self.pub = rospy.Publisher("rosaria"+str(id_nbr)+"/cmd_vel", Twist, queue_size=1)
+        self.pub = rospy.Publisher("RosAria"+str(id_nbr)+"/cmd_vel", Twist, queue_size=1)
         self.sub = rospy.Subscriber("Filter"+str(id_nbr)+"/state", Odometry, self.update_state)
         self.twist = Twist()
 
