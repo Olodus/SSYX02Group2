@@ -32,6 +32,7 @@ class KalmanFilter(object):
 if __name__ == '__main__':
     try:
         k = KalmanFilter(int(sys.argv[1]))
+        rospy.spin()
 
     except rospy.ROSInterruptException:
         pass
