@@ -274,9 +274,9 @@ class Robot(object):
         self.do_set_speed()
 
     def __init__(self, id_nbr):
-        rospy.init_node('robot'+str(id_nbr))
+        rospy.init_node('Robot'+str(id_nbr))
         self.id_nbr = id_nbr
-        self.name = 'robot'+str(id_nbr) #TODO replace all places name could be used instead
+        self.name = 'Robot'+str(id_nbr) #TODO replace all places name could be used instead
         self.pub = rospy.Publisher("rosaria"+str(id_nbr)+"/cmd_vel", Twist, queue_size=1)
         self.sub = rospy.Subscriber("Filter"+str(id_nbr)+"/state", Odometry, self.update_state)
         self.twist = Twist()
@@ -303,25 +303,25 @@ class Robot(object):
 
         ##### Creates all services #####
         # Creating 'is_ready' service
-        a = rospy.Service('robot'+str(id_nbr)+'_is_ready', IsReady, self.is_ready)
+        a = rospy.Service('Robot'+str(id_nbr)+'/is_ready', IsReady, self.is_ready)
 
         # Creating 'aim_at_point' service
-        b = rospy.Service('robot'+str(id_nbr)+'_aim_at_point', AimAtPoint, self.aim_at_point)
+        b = rospy.Service('Robot'+str(id_nbr)+'/aim_at_point', AimAtPoint, self.aim_at_point)
 
         # Creating 'go_to_point' service
-        c = rospy.Service('robot'+str(id_nbr)+'_go_to_point', GoToPoint, self.go_to_point)
+        c = rospy.Service('Robot'+str(id_nbr)+'/go_to_point', GoToPoint, self.go_to_point)
 
         # Creating 'follow_path' service
-        d = rospy.Service('robot'+str(id_nbr)+'_follow_path', FollowPath, self.follow_path)
+        d = rospy.Service('Robot'+str(id_nbr)+'/follow_path', FollowPath, self.follow_path)
 
         # Creating 'set_speed' service
-        e = rospy.Service('robot'+str(id_nbr)+'_set_speed', SetSpeed, self.set_speed)
+        e = rospy.Service('Robot'+str(id_nbr)+'/set_speed', SetSpeed, self.set_speed)
 
         # Creating 'stop' service
-        f = rospy.Service('robot'+str(id_nbr)+'_stop', Stop, self.stop)
+        f = rospy.Service('Robot'+str(id_nbr)+'/stop', Stop, self.stop)
 
         # Creating 'set_acc' service
-        g = rospy.Service('robot'+str(id_nbr)+'_set_acc', SetAcc, self.set_acc)
+        g = rospy.Service('Robot'+str(id_nbr)+'/set_acc', SetAcc, self.set_acc)
 
         rospy.spin()
 
