@@ -17,6 +17,7 @@ class UWBPoseHandler(object):
     def __init__(self, robot_id):
         rospy.init_node('Sensor'+str(robot_id))
         self.pub = rospy.Publisher("Sensor"+str(robot_id)+"/measurement", Odometry, queue_size=1)
+        self.sub = rospy.Subscriber("RosAria"+str(i)+"/pose", Odometry, self.measure)
 
         srv = 'get_coord' + str(0)
         rospy.wait_for_service(srv)
