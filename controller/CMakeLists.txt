@@ -48,15 +48,20 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
  add_message_files(
    FILES
-   Num.msg
 #   std_msgs
  )
 
 ## Generate services in the 'srv' folder
  add_service_files(
    FILES
-   moveStraight.srv
-   getOdom.srv
+   AimAtPoint.srv
+   FollowPath.srv
+   GetState.srv
+   GoToPoint.srv
+   IsReady.srv
+   SetAcc.srv
+   SetSpeed.srv
+   Stop.srv
 
  )
 
@@ -68,10 +73,9 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
- generate_messages(
-   DEPENDENCIES
-   std_msgs
- )
+# generate_messages(
+#   DEPENDENCIES
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
