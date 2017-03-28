@@ -17,9 +17,9 @@ class KalmanFilter(object):
 
     def new_measurement(self, data):
         self.measurement = data
-        check_previous_prediction()
-        remove_predicted_error()
-        create_new_prediction()
+        #check_previous_prediction()
+        #remove_predicted_error()
+        #create_new_prediction()
 
         self.pub.publish(self.state)
 
