@@ -329,7 +329,7 @@ class RobotHandler(object):
 
 if __name__ == '__main__':
     try:
-        RobotHandler(sys.argv[0])
+        r = RobotHandler(sys.argv[0])
 
     except rospy.ROSInterruptException:
         pass

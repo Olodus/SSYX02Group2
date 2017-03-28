@@ -12,3 +12,10 @@ class PoseHandler(object):
         data.pose.pose.x = data.pose.pose.x + self.offsetX
         data.pose.pose.y = data.pose.pose.y + self.offsetY
         self.pub.publish(data)
+
+if __name__ == '__main__':
+    try:
+        PoseHandler(sys.argv[0])
+
+    except rospy.ROSInterruptException:
+        pass
