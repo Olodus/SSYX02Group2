@@ -24,3 +24,10 @@ class KalmanFilter(object):
 #    def remove_predicted_error(self):
 
 #    def create_new_prediction(self):
+
+if __name__ == '__main__':
+    try:
+        k = KalmanFilter(sys.argv[0])
+
+    except rospy.ROSInterruptException:
+        pass

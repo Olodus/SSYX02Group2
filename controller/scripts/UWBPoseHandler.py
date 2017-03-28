@@ -68,3 +68,10 @@ class UWBPoseHandler(object):
         self.measurement.pose.covariance = cov
 
         self.pub.publish(self.measurement)
+
+if __name__ == '__main__':
+    try:
+        UWBPoseHandler(sys.argv[0])
+
+    except rospy.ROSInterruptException:
+        pass
