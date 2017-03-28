@@ -46,6 +46,7 @@ class PresentationProblem(object):
 
  if __name__ == '__main__':
      try:
+         rospy.init_node("Controller")
          r = PresentationProblem()
 
      except rospy.ROSInterruptException:
