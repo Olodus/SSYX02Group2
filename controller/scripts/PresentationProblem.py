@@ -44,7 +44,12 @@ class PresentationProblem(object):
             #check if it has stopped
 
 
+ if __name__ == '__main__':
+     try:
+         r = PresentationProblem()
 
+     except rospy.ROSInterruptException:
+         pass
 
 # Vad som kan brytas ut i en super Problem class
 #  wait til ready metoden
