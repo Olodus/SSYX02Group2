@@ -1,4 +1,7 @@
+#!/usr/bin/env python
+
 import rospy
+import sys
 from nav_msgs.msg import Odometry
 
 class KalmanFilter(object):
@@ -7,6 +10,7 @@ class KalmanFilter(object):
         rospy.init_node('Filter'+str(robot_id))
 
         self.pub = rospy.Publisher("Filter"+str(robot_id)+"/state", Odometry, queue_size=1)
+        self.sub = rospy.Subscriber("Sensor"+str(robot_id)+"/state", Odometry, self.new_measurement)
         self.measurement = Odometry()
         self.prediction = Odometry()
         self.state = Odometry()
@@ -27,7 +31,7 @@ class KalmanFilter(object):
 
 if __name__ == '__main__':
     try:
-        k = KalmanFilter(sys.argv[0])
+        k = KalmanFilter(int(sys.argv[1]))
 
     except rospy.ROSInterruptException:
         pass
