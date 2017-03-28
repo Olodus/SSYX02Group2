@@ -326,3 +326,10 @@ class RobotHandler(object):
 		do_set_speed()
 
 #	def small_steer(self):
+
+if __name__ == '__main__':
+    try:
+        RobotHandler(sys.argv[0])
+
+    except rospy.ROSInterruptException:
+        pass
