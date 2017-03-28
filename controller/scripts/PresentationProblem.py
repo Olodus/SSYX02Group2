@@ -1,7 +1,7 @@
-import geometry_msgs/Point
+from geometry_msgs.msg import Point
 
 class PresentationProblem(object):
-    def __init__():
+    def __init__(self):
         self.nbr_of_robots = 1
         self.start_position = [Point()]
         self.robots = []
@@ -12,12 +12,14 @@ class PresentationProblem(object):
     def get_start_positions(self):
         return self.start_position
 
-    def wait_til_ready(self):
+#    def wait_til_ready(self):
         # loop through and see if all robots are ready
 
     def run(self, robots):
-        if not robots.length==nbr_of_robots:
+        if not len(robots)==self.nbr_of_robots:
             print "Gave problem wrong number of robots"
+            print len(robots)
+            print self.nbr_of_robots
             #Shoud probably return an error here or someting
         else:
             self.robots = robots
@@ -49,5 +51,3 @@ class PresentationProblem(object):
 #  robots variabeln
 #  numberOfRobots
 #  get_start_positions
-
-# Men men    inheritance är ju ändå inte så vidare snyggt så vet inte om jag vill ha det

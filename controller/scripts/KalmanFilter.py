@@ -1,4 +1,5 @@
 import rospy
+from nav_msgs.msg import Odometry
 
 class KalmanFilter(object):
     def __init__(self, robot_id):
@@ -18,8 +19,8 @@ class KalmanFilter(object):
 
         self.pub.publish(self.state)
 
-    def check_previous_prediction(self):
+#    def check_previous_prediction(self):
 
-    def remove_predicted_error(self):
+#    def remove_predicted_error(self):
 
-    def create_new_prediction(self):
+#    def create_new_prediction(self):
