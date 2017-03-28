@@ -23,6 +23,7 @@ class RobotHandler(object):
         self.id_nbr = id_nbr
         self.name = 'robot'+str(id_nbr) #TODO replace all places name could be used instead
         self.pub = rospy.Publisher("rosaria"+str(id_nbr)+"/cmd_vel", Twist, queue_size=1)
+        self.sub = rospy.Subscriber("Filter"+str(i)+"/state", Odometry, self.update_state)
         self.twist = Twist()
 
 		# State

@@ -7,6 +7,7 @@ class PoseHandler(object):
         self.offsetX = offsetX
         self.offsetY = offsetY
         self.pub = rospy.Publisher("Sensor"+str(robot_id)+"/measurement", Odometry, queue_size=1)
+        self.sub = rospy.Subscriber("RosAria"+str(i)+"/pose", Odometry, self.measure)
 
     def measure(self, data):
         data.pose.pose.x = data.pose.pose.x + self.offsetX
