@@ -1,0 +1,14 @@
+<launch>
+  <!-- All Rosaria nodes -->
+
+  <!-- All Get_Coord nodes (only if sim=False) -->
+
+  <!-- The Sensor nodes -->
+
+  <!-- All Filter nodes -->
+
+  <!-- All Robot nodes -->
+
+  <!-- The Controller node -->
+
+</launch>
