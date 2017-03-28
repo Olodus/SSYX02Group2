@@ -1,4 +1,8 @@
+#!/usr/bin/env python
+
 from nav_msgs.msg import Odometry
+import sys
+import rospy
 
 class PoseHandler(object):
 
@@ -7,7 +11,7 @@ class PoseHandler(object):
         self.offsetX = offsetX
         self.offsetY = offsetY
         self.pub = rospy.Publisher("Sensor"+str(robot_id)+"/measurement", Odometry, queue_size=1)
-        self.sub = rospy.Subscriber("RosAria"+str(i)+"/pose", Odometry, self.measure)
+        self.sub = rospy.Subscriber("RosAria"+str(robot_id)+"/pose", Odometry, self.measure)
 
     def measure(self, data):
         data.pose.pose.x = data.pose.pose.x + self.offsetX
@@ -16,7 +20,12 @@ class PoseHandler(object):
 
 if __name__ == '__main__':
     try:
-        PoseHandler(sys.argv[0])
+        if int(sys.argv[1])==0:
+            PoseHandler(int(sys.argv[1]),0.0,0.0)
+        else:
+            PoseHandler(int(sys.argv[1]),0.0,1.0)
+
+        rospy.spin()
 
     except rospy.ROSInterruptException:
         pass

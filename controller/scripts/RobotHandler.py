@@ -1,10 +1,14 @@
+#!/usr/bin/env python
+
 from std_msgs.msg import Float32
 from nav_msgs.msg import Odometry, Path
 from geometry_msgs.msg import Point, Quaternion, Twist
+from controller.srv import *
 import tf
 import dynamic_reconfigure.client
 import math
 import rospy
+import sys
 
 
 # Missions
@@ -23,7 +27,7 @@ class RobotHandler(object):
         self.id_nbr = id_nbr
         self.name = 'robot'+str(id_nbr) #TODO replace all places name could be used instead
         self.pub = rospy.Publisher("rosaria"+str(id_nbr)+"/cmd_vel", Twist, queue_size=1)
-        self.sub = rospy.Subscriber("Filter"+str(i)+"/state", Odometry, self.update_state)
+        self.sub = rospy.Subscriber("Filter"+str(id_nbr)+"/state", Odometry, self.update_state)
         self.twist = Twist()
 
 		# State
@@ -127,7 +131,7 @@ class RobotHandler(object):
 	def get_state(self):
 		return {'state': self.state}
 
-	def is_ready(self):
+	def is_ready(self, req):
 		return {'robot_ready': not self.executing}
 
 	def aim_at_point(self, req):
@@ -330,7 +334,7 @@ class RobotHandler(object):
 
 if __name__ == '__main__':
     try:
-        r = RobotHandler(sys.argv[0])
+        r = RobotHandler(int(sys.argv[1]))
 
     except rospy.ROSInterruptException:
         pass

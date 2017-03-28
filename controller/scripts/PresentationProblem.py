@@ -1,4 +1,7 @@
+#!/usr/bin/env python
+
 from geometry_msgs.msg import Point
+import sys
 
 class PresentationProblem(object):
     def __init__(self):
