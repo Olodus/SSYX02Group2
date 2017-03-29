@@ -14,8 +14,8 @@ class PoseHandler(object):
         self.sub = rospy.Subscriber("RosAria"+str(robot_id)+"/pose", Odometry, self.measure)
 
     def measure(self, data):
-        data.pose.pose.x = data.pose.pose.x + self.offsetX
-        data.pose.pose.y = data.pose.pose.y + self.offsetY
+        data.pose.pose.position.x = data.pose.pose.position.x + self.offsetX
+        data.pose.pose.position.y = data.pose.pose.position.y + self.offsetY
         self.pub.publish(data)
 
 if __name__ == '__main__':

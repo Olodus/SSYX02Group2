@@ -40,17 +40,17 @@ class Robot(object):
     def do_mission(self):
         self.twist = Twist()
         if self.mission == 0:
-            return do_go_to_point()
+            return self.do_go_to_point()
         elif self.mission == 1:
-            return do_follow_path()
+            return self.do_follow_path()
         elif self.mission == 2:
-            return do_aim_at_point()
+            return self.do_aim_at_point()
         elif self.mission == 3:
-            return do_set_speed()
+            return self.do_set_speed()
         elif self.mission == 4:
-            do_set_acc()
+            self.do_set_acc()
         elif self.mission == 5:
-            return do_stop()
+            return self.do_stop()
 
     def publish_twist(self):
         self.pub.publish(self.twist)
@@ -164,7 +164,7 @@ class Robot(object):
         length = self.length_to_point
 
         self.aim_point = self.go_point
-        if not do_aim_at_point():
+        if not self.do_aim_at_point():
             return False
         elif length >= 1.0:
             self.desired_speed = 0.3
@@ -204,46 +204,46 @@ class Robot(object):
         self.angle_to_point = robot_angle - angle
         # If we would make all this into a P regulator p ~= 2.0/PI probably
 
-        if math.fabs(self.angle_to_point)>20*math.PI/180:
+        if math.fabs(self.angle_to_point)>20*math.pi/180:
             if robot_angle < angle:
-                if math.fabs(self.angle_to_point)<math.PI:
+                if math.fabs(self.angle_to_point)<math.pi:
                     self.twist.angular.z = 0.3
                     return False
                 else:
                     self.twist.angular.z = -0.3
                     return False
             else:
-                if math.fabs(self.angle_to_point)<math.PI:
+                if math.fabs(self.angle_to_point)<math.pi:
                     self.twist.angular.z = -0.3
                     return False
                 else:
                     self.twist.angular.z = 0.3
                     return False
-        elif 10*math.PI/180<=math.fabs(self.angle_to_point) and math.fabs(self.angle_to_point)<=20*math.PI/180:
+        elif 10*math.pi/180<=math.fabs(self.angle_to_point) and math.fabs(self.angle_to_point)<=20*math.pi/180:
             if robot_angle < angle:
-                if math.fabs(self.angle_to_point)<math.PI:
+                if math.fabs(self.angle_to_point)<math.pi:
                     self.twist.angular.z = 0.1
                     return False
                 else:
                     self.twist.angular.z = -0.1
                     return False
             else:
-                if math.fabs(self.angle_to_point)<math.PI:
+                if math.fabs(self.angle_to_point)<math.pi:
                     self.twist.angular.z = -0.1
                     return False
                 else:
                     self.twist.angular.z = 0.1
                     return False
-        elif 0.5*math.PI/180<=math.fabs(self.angle_to_point) and math.fabs(self.angle_to_point)<=10*math.PI/180:
+        elif 0.5*math.pi/180<=math.fabs(self.angle_to_point) and math.fabs(self.angle_to_point)<=10*math.pi/180:
             if robot_angle < angle:
-                if math.fabs(self.angle_to_point)<math.PI:
+                if math.fabs(self.angle_to_point)<math.pi:
                     self.twist.angular.z = 0.01
                     return False
                 else:
                     self.twist.angular.z = -0.01
                     return False
             else:
-                if math.fabs(self.angle_to_point)<math.PI:
+                if math.fabs(self.angle_to_point)<math.pi:
                     self.twist.angular.z = -0.01
                     return False
                 else:
