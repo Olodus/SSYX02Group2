@@ -8,12 +8,17 @@ import rospy
 class PresentationProblem(object):
 
     def run(self):
-        r1_g2p = rospy.ServiceProxy("Robot0/go_to_point",GoToPoint)
-        p = Point()
-        p.x = 5.0
-        p.y = 5.0
-        resp = r1_g2p(p)
-        print str(resp)
+        r1_state = rospy.ServiceProxy("Robot0/get_state",GetState)
+        data = r1_state()
+        print str(data.state.pose.pose.position.x)
+        if data.state.pose.pose.position.x >= 5.0:
+            r1_stop = rospy.ServiceProxy("Robot0/stop", Stop)
+            r1_stop()
+            print "Stopped"
+        else:
+            r1_acc = rospy.ServiceProxy("Robot0/set_acc",SetAcc)
+            resp = r1_acc(0.3)
+            print str(resp)
 
 
 
