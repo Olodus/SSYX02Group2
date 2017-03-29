@@ -8,8 +8,12 @@ import rospy
 class PresentationProblem(object):
 
     def run(self):
-        r1_acc = rospy.ServiceProxy("Robot0/set_acc",SetAcc)
-        resp = r1_acc(0.5)
+        r1_g2p = rospy.ServiceProxy("Robot0/go_to_point",GoToPoint)
+        p = Point()
+        p.x = 5.0
+        p.y = 0.0
+        resp = r1_g2p(p)
+        print str(resp)
 
 
 
