@@ -38,6 +38,7 @@ class Robot(object):
                 self.end_mission()
 
     def do_mission(self):
+        print "mission: "+str(self.mission)
         self.twist = Twist()
         if self.mission == 0:
             return self.do_go_to_point()
@@ -79,7 +80,7 @@ class Robot(object):
             self.executing = False
             self.mission = -1
 
-    def get_state(self):
+    def get_state(self, req):
         return {'state': self.state}
 
     def is_ready(self, req):
@@ -132,10 +133,11 @@ class Robot(object):
             msg = "Robot " + str(self.id_nbr) + ": Will set speed to " + str(req.speed)
             return {'succeded': True, 'error_msg': msg}
 
-    def stop(self):
-        if self.executing:
+    def stop(self,req):
+        if self.executing or self.moving:
             error = "Robot " + str(self.id_nbr) + ": Stopped executing it's mission"
             self.mission = 5
+            print "In service stop"
             return {'succeded': True, 'error_msg': error}
         else:
             msg = "Robot " + str(self.id_nbr) + ": Can't stop since it wasn't executing a mission"
@@ -264,6 +266,7 @@ class Robot(object):
     def do_stop(self):
         self.twist.linear.x = 0.0
         self.twist.angular.z = 0.0
+        print "In stop"
         return math.fabs(self.state.twist.twist.linear.x) <= 0.001 and math.fabs(self.state.twist.twist.angular.z) <= 0.001
 
 
@@ -271,7 +274,7 @@ class Robot(object):
     def emulate_acc(self):
         #TODO Create acc implementation that handles accual time not just 0.1 sec
         curr_speed = self.state.twist.twist.linear.x
-        desired_speed = curr_speed + self.acc*0.1
+        self.desired_speed = curr_speed + self.acc*0.1
         self.do_set_speed()
 
     def __init__(self, id_nbr):
@@ -323,6 +326,9 @@ class Robot(object):
 
         # Creating 'set_acc' service
         g = rospy.Service('Robot'+str(id_nbr)+'/set_acc', SetAcc, self.set_acc)
+
+        # Creating 'get_state' service
+        g = rospy.Service('Robot' + str(id_nbr) + '/get_state', GetState, self.get_state)
 
         rospy.spin()
 
