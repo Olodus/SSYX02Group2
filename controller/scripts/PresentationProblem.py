@@ -11,7 +11,7 @@ class PresentationProblem(object):
         r1_g2p = rospy.ServiceProxy("Robot0/go_to_point",GoToPoint)
         p = Point()
         p.x = 5.0
-        p.y = 0.0
+        p.y = 5.0
         resp = r1_g2p(p)
         print str(resp)
 

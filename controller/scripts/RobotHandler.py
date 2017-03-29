@@ -197,11 +197,12 @@ class Robot(object):
         y = self.state.pose.pose.position.y
         pointx = self.aim_point.x
         pointy = self.aim_point.y
-        angle = math.atan2(x-pointx,y-pointy)
+        angle = math.atan2(pointy-y,pointx-x)
         quart = (self.state.pose.pose.orientation.x, self.state.pose.pose.orientation.y, self.state.pose.pose.orientation.z, self.state.pose.pose.orientation.w)
         euler = tf.transformations.euler_from_quaternion(quart)
         robot_angle = euler[2]
         self.angle_to_point = robot_angle - angle
+        print str(self.go_point)
         # If we would make all this into a P regulator p ~= 2.0/PI probably
 
         if math.fabs(self.angle_to_point)>20*math.pi/180:
