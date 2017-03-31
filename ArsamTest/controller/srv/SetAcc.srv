@@ -1,0 +1,4 @@
+float32 acc
+---
+bool succeded
+string error_msg
