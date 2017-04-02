@@ -38,7 +38,7 @@ class Robot(object):
                 self.end_mission()
 
     def do_mission(self):
-        print "mission: "+str(self.mission)
+        #print "mission: "+str(self.mission)
         self.twist = Twist()
         if self.mission == 0:
             return self.do_go_to_point()
@@ -164,32 +164,34 @@ class Robot(object):
 
         self.length_to_point = math.sqrt(math.pow(pointx-x,2)+math.pow(pointy-y,2))
         length = self.length_to_point
+	#print "--------------------------------------"
+	#print "robot"+str(self.id_nbr)+" has "+str(self.length_to_point)+" distance to point"
 
         self.aim_point = self.go_point
         if not self.do_aim_at_point():
             return False
         elif length >= 1.0:
-            self.desired_speed = 0.3
+            self.desired_speed = self.desired_speed1
             self.do_set_speed()
             return False
         elif length >= 0.5:
-            self.desired_speed = 0.2
+            self.desired_speed = self.desired_speed2
             self.do_set_speed()
             #small_steer()
             return False
         elif length >= 0.25:
-            self.desired_speed = 0.1
+            self.desired_speed = self.desired_speed3
             self.do_set_speed()
             return False
-        elif length >= 0.1:
+        elif length >= 0.1 or length < 0.1:
             return True
 
     def do_follow_path(self):
-        if self.path_index == len(self.path):
+        if self.path_index == len(self.path.poses):
             return True
         else:
-            self.go_point.x = self.path.poses[self.path_index].position.x
-            self.go_point.y = self.path.poses[self.path_index].position.y
+            self.go_point.x = self.path.poses[self.path_index].pose.position.x
+            self.go_point.y = self.path.poses[self.path_index].pose.position.y
             if self.do_go_to_point():
                 self.path_index = self.path_index+1
             return False
@@ -203,55 +205,22 @@ class Robot(object):
         quart = (self.state.pose.pose.orientation.x, self.state.pose.pose.orientation.y, self.state.pose.pose.orientation.z, self.state.pose.pose.orientation.w)
         euler = tf.transformations.euler_from_quaternion(quart)
         robot_angle = euler[2]
-        self.angle_to_point = robot_angle - angle
-        print str(self.go_point)
+	self.angle_to_point = robot_angle - angle
+	if self.angle_to_point > math.pi:
+		self.angle_to_point = self.angle_to_point-2*math.pi
+	if self.angle_to_point < -math.pi:
+		self.angle_to_point = self.angle_to_point+2*math.pi
+	if self.angle_to_point < 0:
+		rotSpeed = math.fabs(self.angle_to_point)*(2.0/math.pi)
+	if self.angle_to_point > 0:
+		rotSpeed = -math.fabs(self.angle_to_point)*(2.0/math.pi)
+	
+        #print "angle to point for robot"+str(self.id_nbr)+": "+str(math.fabs(self.angle_to_point)*180/math.pi)
         # If we would make all this into a P regulator p ~= 2.0/PI probably
 
-        if math.fabs(self.angle_to_point)>20*math.pi/180:
-            if robot_angle < angle:
-                if math.fabs(self.angle_to_point)<math.pi:
-                    self.twist.angular.z = 0.3
-                    return False
-                else:
-                    self.twist.angular.z = -0.3
-                    return False
-            else:
-                if math.fabs(self.angle_to_point)<math.pi:
-                    self.twist.angular.z = -0.3
-                    return False
-                else:
-                    self.twist.angular.z = 0.3
-                    return False
-        elif 10*math.pi/180<=math.fabs(self.angle_to_point) and math.fabs(self.angle_to_point)<=20*math.pi/180:
-            if robot_angle < angle:
-                if math.fabs(self.angle_to_point)<math.pi:
-                    self.twist.angular.z = 0.1
-                    return False
-                else:
-                    self.twist.angular.z = -0.1
-                    return False
-            else:
-                if math.fabs(self.angle_to_point)<math.pi:
-                    self.twist.angular.z = -0.1
-                    return False
-                else:
-                    self.twist.angular.z = 0.1
-                    return False
-        elif 0.5*math.pi/180<=math.fabs(self.angle_to_point) and math.fabs(self.angle_to_point)<=10*math.pi/180:
-            if robot_angle < angle:
-                if math.fabs(self.angle_to_point)<math.pi:
-                    self.twist.angular.z = 0.01
-                    return False
-                else:
-                    self.twist.angular.z = -0.01
-                    return False
-            else:
-                if math.fabs(self.angle_to_point)<math.pi:
-                    self.twist.angular.z = -0.01
-                    return False
-                else:
-                    self.twist.angular.z = 0.01
-                    return False
+	if math.fabs(self.angle_to_point)>1.0*math.pi/180:
+	    self.twist.angular.z = rotSpeed
+	    return False
         else:
             self.twist.angular.z = 0.0
             return True
@@ -266,15 +235,19 @@ class Robot(object):
     def do_stop(self):
         self.twist.linear.x = 0.0
         self.twist.angular.z = 0.0
-        print "In stop"
-        return math.fabs(self.state.twist.twist.linear.x) <= 0.001 and math.fabs(self.state.twist.twist.angular.z) <= 0.001
+        print "robot"+str(self.id_nbr)+" is in stop"
+        return math.fabs(self.state.twist.twist.linear.x) <= 0.1 and math.fabs(self.state.twist.twist.angular.z) <= 0.1
 
 
 
     def emulate_acc(self):
         #TODO Create acc implementation that handles accual time not just 0.1 sec
         curr_speed = self.state.twist.twist.linear.x
+	print "accelerated speed of robot"+str(self.id_nbr)+" is: "+str(curr_speed)
         self.desired_speed = curr_speed + self.acc*0.1
+	self.desired_speed1 = self.desired_speed
+	self.desired_speed2 = self.desired_speed
+	self.desired_speed3 = self.desired_speed
         self.do_set_speed()
 
     def __init__(self, id_nbr):
@@ -299,6 +272,9 @@ class Robot(object):
         self.path = Path()
         self.path_index = 0
         self.desired_speed = 0.0
+	self.desired_speed1 = 0.5
+	self.desired_speed2 = 0.4
+	self.desired_speed3 = 0.3
         self.acc = 0.0
 
         # Constants
