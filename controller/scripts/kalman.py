@@ -41,7 +41,7 @@ class Kalman(object):
 
     def uncertainty(self, f):
         '''
-        Retruns P  uncertainty estimation (predictin) from equation
+        Retruns P  uncertainty estimation (prediction) from equation
         P = F_k*P_k_k1*F_k^T + Q_k
         '''
 
@@ -52,8 +52,8 @@ class Kalman(object):
                       [0, 0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 0, 0]])
 
-        self.p += np.dot(np.dot(f, self.p), f.T) + self.q
-        return self.p
+        p = np.dot(np.dot(f, self.p), f.T) + self.q
+        return p
 
 
     def update(self, x_k1_k1, v, omega, dt, measured):
@@ -87,7 +87,7 @@ class Kalman(object):
 
 
         x_k_k1 = self.predict(x_k1_k1, v, omega, dt)
-        p = self.uncertainty(f);
+        p_k_k1 = self.uncertainty(f);
 
 
         '''
@@ -118,7 +118,7 @@ class Kalman(object):
         S_k = H_k * P_k|k-1 * H_k^T + Rk
         '''
 
-#self.std_meas**2*
+
         r = self.std_meas**2*np.array([[1, 0, 0, 0, 0, 0],
                                        [0, 1, 0, 0, 0, 0],
                                        [0, 0, 1, 0, 0, 0],
@@ -130,14 +130,14 @@ class Kalman(object):
 #        print  (self.p)
 #        print  (r)
 
-        s = np.add(np.dot(np.dot(h, p), h.T), r)
-        #not sure if this is correct
+        s = np.add(np.dot(np.dot(h, p_k_k1), h.T), r)
+        #inte säker på om detta är rätt
         '''
         4. Calculate the Kalman gain using
         K = P_k|k-1 * H^T * S_k^-1
         '''
 
-        kalman_gain = np.dot(np.dot(self.p, h.T), np.linalg.inv(s))  # Kalman gain
+        kalman_gain = np.dot(np.dot(p_k_k1, h.T), np.linalg.inv(s))  # Kalman gain
 
         '''
         5. Calculate new state and state covariance with
@@ -147,9 +147,9 @@ class Kalman(object):
         '''
         x_k_k = x_k_k1 + np.dot(kalman_gain, y_k)  # current state
             # current covariance
-        self.p = np.dot(np.eye(6) - np.dot(kalman_gain, h), self.p)
+        self.p = np.dot(np.eye(6) - np.dot(kalman_gain, h), p_k_k1)
         self.q = np.zeros((6, 6))  # reset control noise after correction
 
-        #print (self.p)
+        print (self.p)
 
         return x_k_k
