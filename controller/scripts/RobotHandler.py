@@ -68,7 +68,6 @@ class Robot(object):
         elif self.mission == 3:
             # Set speed
             self.executing = False
-            self.mission = -1
             self.moving = True
         elif self.mission == 4:
             # Set acc
