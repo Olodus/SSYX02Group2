@@ -48,7 +48,7 @@ if __name__ == '__main__':
             # First set the speed they'll enter the problem with
             r0.set_speed(0.5)
             r1.set_speed(0.5)
-            rospy.sleep(1.0)
+            rospy.sleep(1.5)
             print "Both robots are now at correct speed"
 
             # Calculate how long it will take for r0 to reach ip
@@ -58,14 +58,18 @@ if __name__ == '__main__':
 
             t = t + 2.0
             v = r1.get_state().state.twist.twist.linear.x
-            r1.set_acc(-0.5)
+            resp = r1.set_acc(-0.09)
 
-            while r1.get_state().state.pose.pose.position.y < 0.0:
+            while r0.get_state().state.pose.pose.position.x < 0.0:
                 rospy.sleep(0.5)
 
-            r1.set_acc(1.0)
-            while r1.get_state().state.pose.pose.position.y < 2.0:
+            print "r0 passed mid"
+
+            r1.set_acc(0.3)
+            while r0.get_state().state.pose.pose.position.x < 2.0:
                 rospy.sleep(0.5)
+
+            print "r1 passed y=2.0"
 
             p0 = Point()
             p0.x = 3.0
@@ -81,6 +85,7 @@ if __name__ == '__main__':
             temp_r = r0
             r0 = r1
             r1 = temp_r
+
 
     except rospy.ROSInterruptException:
         pass
