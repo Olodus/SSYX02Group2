@@ -38,7 +38,6 @@ class Robot(object):
                 self.end_mission()
 
     def do_mission(self):
-        #print "mission: "+str(self.mission)
         self.twist = Twist()
         if self.mission == 0:
             return self.do_go_to_point()
@@ -137,7 +136,6 @@ class Robot(object):
         if self.executing or self.moving:
             error = "Robot " + str(self.id_nbr) + ": Stopped executing it's mission"
             self.mission = 5
-            print "In service stop"
             return {'succeded': True, 'error_msg': error}
         else:
             msg = "Robot " + str(self.id_nbr) + ": Can't stop since it wasn't executing a mission"
@@ -164,8 +162,6 @@ class Robot(object):
 
         self.length_to_point = math.sqrt(math.pow(pointx-x,2)+math.pow(pointy-y,2))
         length = self.length_to_point
-	#print "--------------------------------------"
-	#print "robot"+str(self.id_nbr)+" has "+str(self.length_to_point)+" distance to point"
 
         self.aim_point = self.go_point
         if not self.do_aim_at_point():
@@ -215,9 +211,6 @@ class Robot(object):
 	if self.angle_to_point > 0:
 		rotSpeed = -math.fabs(self.angle_to_point)*(2.0/math.pi)
 
-        #print "angle to point for robot"+str(self.id_nbr)+": "+str(math.fabs(self.angle_to_point)*180/math.pi)
-        # If we would make all this into a P regulator p ~= 2.0/PI probably
-
 	if math.fabs(self.angle_to_point)>1.0*math.pi/180:
 	    self.twist.angular.z = rotSpeed
 	    return False
@@ -235,15 +228,13 @@ class Robot(object):
     def do_stop(self):
         self.twist.linear.x = 0.0
         self.twist.angular.z = 0.0
-        print "robot"+str(self.id_nbr)+" is in stop"
-        return math.fabs(self.state.twist.twist.linear.x) <= 0.1 and math.fabs(self.state.twist.twist.angular.z) <= 0.1
+        return math.fabs(self.state.twist.twist.linear.x) <= 0.01 and math.fabs(self.state.twist.twist.angular.z) <= 0.01
 
 
 
     def emulate_acc(self):
         #TODO Create acc implementation that handles accual time not just 0.1 sec
         curr_speed = self.state.twist.twist.linear.x
-	print "accelerated speed of robot"+str(self.id_nbr)+" is: "+str(curr_speed)
         self.desired_speed = curr_speed + self.acc*0.1
         self.do_set_speed()
 
