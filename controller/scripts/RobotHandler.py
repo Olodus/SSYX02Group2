@@ -219,7 +219,7 @@ class Robot(object):
 
     def do_set_speed(self):
         self.twist.linear.x = self.desired_speed
-        return math.fabs(self.state.twist.twist.linear.x - self.desired_speed) <= 0.001
+        return True#math.fabs(self.state.twist.twist.linear.x - self.desired_speed) <= 0.001
 
     def do_set_acc(self):
         self.emulate_acc()
