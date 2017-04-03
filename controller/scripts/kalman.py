@@ -131,7 +131,7 @@ class Kalman(object):
 #        print  (r)
 
         s = np.add(np.dot(np.dot(h, p), h.T), r)
-        #inte säker på om detta är rätt
+        #not sure if this is correct
         '''
         4. Calculate the Kalman gain using
         K = P_k|k-1 * H^T * S_k^-1

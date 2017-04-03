@@ -3,9 +3,10 @@
 import rospy
 import sys
 from nav_msgs.msg import Odometry
-from kalman import *
+from kalman import Kalman
 import math
 import tf
+import numpy as np
 
 class KalmanFilter(object):
     def __init__(self, robot_id):
@@ -16,17 +17,18 @@ class KalmanFilter(object):
         self.sub = rospy.Subscriber("Sensor"+str(robot_id)+"/measurement", Odometry, self.new_measurement)
         self.kf = Kalman()
         self.state_out = Odometry()
+        self.state = np.array([[0],[0],[0],[0],[0],[0]])
 
     def new_measurement(self, data):
         self.state = Kalman.update(self.kf,self.state,data.twist.twist.linear.x,data.twist.twist.angular.z,0.1,[data.pose.pose.position.x, data.pose.pose.position.y])
         self.state_out.pose.pose.position.x = self.state[0]
         self.state_out.pose.pose.position.y = self.state[2]
         self.state_out.twist.twist.linear.x = math.sqrt(self.state[1]**2+self.state[3]**2)
-        quart = tf.transformations.quarternions_from_euler(0.0,0.0,self.state[4])
-        self.state_out.pose.pose.orientation.x = quart[0]
-        self.state_out.pose.pose.orientation.y = quart[1]
-        self.state_out.pose.pose.orientation.z = quart[2]
-        self.state_out.pose.pose.orientation.w = quart[3]
+        quat = tf.transformations.quaternion_from_euler(0.0, 0.0, self.state[4])
+        self.state_out.pose.pose.orientation.x = quat[0]
+        self.state_out.pose.pose.orientation.y = quat[1]
+        self.state_out.pose.pose.orientation.z = quat[2]
+        self.state_out.pose.pose.orientation.w = quat[3]
         self.state_out.twist.twist.angular.z = self.state[5]
 
         self.pub.publish(self.state_out)
