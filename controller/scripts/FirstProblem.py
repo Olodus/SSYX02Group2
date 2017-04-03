@@ -126,7 +126,7 @@ class PresentationProblem(object):
 	    count0 = 1
 	    ready0 = False
 	    hasRan = False
-	    
+
 
 	if (distToInterPoint0r1<=0.3 or distToInterPoint1r1<=0.3) and (not ready1):
 	    if count1 == 1:
@@ -169,7 +169,7 @@ class PresentationProblem(object):
 	    count1 = 1
 	    ready1 = False
 	    hasRan = False
-	
+
 	if ready0 == True and ready1 == True:
 			print "-----------------------------------"
 			print "Crossing intersection!"
@@ -195,7 +195,7 @@ class PresentationProblem(object):
 			r1_go = rospy.ServiceProxy("Robot1/go_to_point", GoToPoint)
 			rospy.wait_for_service("Robot0/go_to_point")
 			r0_go = rospy.ServiceProxy("Robot0/go_to_point", GoToPoint)
-		    	
+
 			if intersectionPassed:
 				go1 = r1_go(interPoint0)
 				go0 = r0_go(interPoint1)
@@ -206,7 +206,7 @@ class PresentationProblem(object):
 				go0 = r0_go(interPoint0)
 				ready1 = False
 				ready0 = False
-			
+
 			rospy.sleep(1.0)
 
 if __name__ == '__main__':

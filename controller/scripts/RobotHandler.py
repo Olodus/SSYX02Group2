@@ -171,16 +171,16 @@ class Robot(object):
         if not self.do_aim_at_point():
             return False
         elif length >= 1.0:
-            self.desired_speed = self.desired_speed1
+            self.desired_speed = 0.5
             self.do_set_speed()
             return False
         elif length >= 0.5:
-            self.desired_speed = self.desired_speed2
+            self.desired_speed = 0.4
             self.do_set_speed()
             #small_steer()
             return False
         elif length >= 0.25:
-            self.desired_speed = self.desired_speed3
+            self.desired_speed = 0.3
             self.do_set_speed()
             return False
         elif length >= 0.1 or length < 0.1:
@@ -214,7 +214,7 @@ class Robot(object):
 		rotSpeed = math.fabs(self.angle_to_point)*(2.0/math.pi)
 	if self.angle_to_point > 0:
 		rotSpeed = -math.fabs(self.angle_to_point)*(2.0/math.pi)
-	
+
         #print "angle to point for robot"+str(self.id_nbr)+": "+str(math.fabs(self.angle_to_point)*180/math.pi)
         # If we would make all this into a P regulator p ~= 2.0/PI probably
 
@@ -245,9 +245,6 @@ class Robot(object):
         curr_speed = self.state.twist.twist.linear.x
 	print "accelerated speed of robot"+str(self.id_nbr)+" is: "+str(curr_speed)
         self.desired_speed = curr_speed + self.acc*0.1
-	self.desired_speed1 = self.desired_speed
-	self.desired_speed2 = self.desired_speed
-	self.desired_speed3 = self.desired_speed
         self.do_set_speed()
 
     def __init__(self, id_nbr):
@@ -272,9 +269,6 @@ class Robot(object):
         self.path = Path()
         self.path_index = 0
         self.desired_speed = 0.0
-	self.desired_speed1 = 0.5
-	self.desired_speed2 = 0.4
-	self.desired_speed3 = 0.3
         self.acc = 0.0
 
         # Constants
