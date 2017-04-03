@@ -23,7 +23,7 @@ if __name__ == '__main__':
         if int(sys.argv[1])==0:
             PoseHandler(int(sys.argv[1]),0.0,0.0)
         else:
-            PoseHandler(int(sys.argv[1]),0.0,1.0)
+            PoseHandler(int(sys.argv[1]),0.0,-1.0)
         print "PoseHandler setup done."
         rospy.spin()
 
