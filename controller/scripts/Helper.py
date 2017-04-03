@@ -47,3 +47,9 @@ def setup_set_acc(robot_id):
 def setup_get_state(robot_id):
   rospy.wait_for_service("Robot"+str(robot_id)+"/get_state")
   return rospy.ServiceProxy("Robot"+str(robot_id)+"/get_state",GetState)
+
+def wait_til_both_ready(r0,r1):
+    while not r0.is_ready().robot_ready:
+        rospy.sleep(1.0)
+    while not r1.is_ready().robot_ready:
+        rospy.sleep(1.0)
