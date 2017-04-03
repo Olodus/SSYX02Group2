@@ -300,12 +300,13 @@ class Robot(object):
         # Creating 'get_state' service
         g = rospy.Service('Robot' + str(id_nbr) + '/get_state', GetState, self.get_state)
 
-        rospy.spin()
 
 
 if __name__ == '__main__':
     try:
         r = Robot(int(sys.argv[1]))
+        print "Robot setup done"
+        rospy.spin()
 
     except rospy.ROSInterruptException:
         pass

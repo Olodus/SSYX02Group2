@@ -11,9 +11,10 @@ from Helper import RobotServices
 if __name__ == '__main__':
     try:
         rospy.init_node("Controller")
-	    rospy.sleep(0.5)
+        rospy.sleep(0.5)
         r0 = RobotServices(0)
         r1 = RobotServices(1)
+        print "Controller setup done"
         while True:
             # Both robots go to their start points
             p0 = Point()
@@ -48,7 +49,7 @@ if __name__ == '__main__':
             r0.set_speed(0.5)
             r1.set_speed(0.5)
             rospy.sleep(1.0)
-            
+
             rospy.sleep(1.0)
 
     except rospy.ROSInterruptException:

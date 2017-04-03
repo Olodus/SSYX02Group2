@@ -33,6 +33,7 @@ class KalmanFilter(object):
 if __name__ == '__main__':
     try:
         k = KalmanFilter(int(sys.argv[1]))
+        print "Filter setup done."
         rospy.spin()
 
     except rospy.ROSInterruptException:
