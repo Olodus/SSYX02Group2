@@ -150,6 +150,6 @@ class Kalman(object):
         self.p = np.dot(np.eye(6) - np.dot(kalman_gain, h), self.p)
         self.q = np.zeros((6, 6))  # reset control noise after correction
 
-        print (self.p)
+        #print (self.p)
 
         return x_k_k

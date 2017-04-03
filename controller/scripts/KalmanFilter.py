@@ -30,6 +30,7 @@ class KalmanFilter(object):
         self.state_out.pose.pose.orientation.z = quat[2]
         self.state_out.pose.pose.orientation.w = quat[3]
         self.state_out.twist.twist.angular.z = self.state[5]
+        print str(self.state)
 
         self.pub.publish(self.state_out)
 
