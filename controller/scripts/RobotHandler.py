@@ -243,14 +243,12 @@ class Robot(object):
     def parameter_acc(self):
         if self.acc > 0:
             para = {'trans_accel':math.fabs(self.acc),'trans_decel':math.fabs(self.acc)}
-            resp = self.dyn_par.update_configuration(para)
-            print str(resp)
+            self.dyn_par.update_configuration(para)
             self.desired_speed = self.max_speed
             self.do_set_speed()
         else:
             para = {'trans_accel':math.fabs(self.acc),'trans_decel':math.fabs(self.acc)}
-            resp = self.dyn_par.update_configuration(para)
-            print str(resp)
+            self.dyn_par.update_configuration(para)
             self.desired_speed = 0.0
             self.do_set_speed()
 
