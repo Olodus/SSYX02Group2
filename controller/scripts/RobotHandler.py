@@ -9,7 +9,7 @@ import dynamic_reconfigure.client
 import math
 import rospy
 import sys
-import pprint
+import dynamic_reconfigure.client
 
 
 # Missions
@@ -84,6 +84,9 @@ class Robot(object):
             error = "Error: Robot " + str(self.id_nbr) + ": Is already doing something"
             return {'succeded': False, 'error_msg': error}
         else:
+            if self.mission == 4:
+                para = {'trans_accel': 1.0, 'trans_decel': 1.0}
+                self.dyn_par.update_configuration(para)
             self.executing = True
             self.mission = 2
             self.aim_point = req.point
@@ -95,6 +98,9 @@ class Robot(object):
             error = "Error: Robot " + str(self.id_nbr) + ": Is already doing something"
             return {'succeded': False, 'error_msg': error}
         else:
+            if self.mission == 4:
+                para = {'trans_accel': 1.0, 'trans_decel': 1.0}
+                self.dyn_par.update_configuration(para)
             self.executing = True
             self.mission = 0
             self.go_point = req.point
@@ -107,6 +113,9 @@ class Robot(object):
             error = "Robot " + str(self.id_nbr) + ": Is already doing something"
             return {'succeded': False, 'error_msg': error}
         else:
+            if self.mission == 4:
+                para = {'trans_accel': 1.0, 'trans_decel': 1.0}
+                self.dyn_par.update_configuration(para)
             self.executing = True
             self.mission = 1
             self.path = req.path
@@ -119,6 +128,9 @@ class Robot(object):
             error = "Robot " + str(self.id_nbr) + ": Can't set speed since already on a mission (use stop to abort mission)"
             return {'succeded': False, 'error_msg': error}
         else:
+            if self.mission == 4:
+                para = {'trans_accel': 1.0, 'trans_decel': 1.0}
+                self.dyn_par.update_configuration(para)
             self.executing = True
             self.moving = True
             self.mission = 3
@@ -132,6 +144,9 @@ class Robot(object):
             self.mission = 5
             return {'succeded': True, 'error_msg': error}
         else:
+            if self.mission == 4:
+                para = {'trans_accel': 1.0, 'trans_decel': 1.0}
+                self.dyn_par.update_configuration(para)
             msg = "Robot " + str(self.id_nbr) + ": Can't stop since it wasn't executing a mission"
             return {'succeded': False, 'error_msg': msg}
 
@@ -217,14 +232,27 @@ class Robot(object):
         return True#math.fabs(self.state.twist.twist.linear.x - self.desired_speed) <= 0.001
 
     def do_set_acc(self):
-        self.emulate_acc()
+        #self.emulate_acc()
+        self.parameter_acc()
 
     def do_stop(self):
         self.twist.linear.x = 0.0
         self.twist.angular.z = 0.0
         return math.fabs(self.state.twist.twist.linear.x) <= 0.01 and math.fabs(self.state.twist.twist.angular.z) <= 0.01
 
-
+    def parameter_acc(self):
+        if self.acc > 0:
+            para = {'trans_accel':math.fabs(self.acc),'trans_decel':math.fabs(self.acc)}
+            resp = self.dyn_par.update_configuration(para)
+            print str(resp)
+            self.desired_speed = self.max_speed
+            self.do_set_speed()
+        else:
+            para = {'trans_accel':math.fabs(self.acc),'trans_decel':math.fabs(self.acc)}
+            resp = self.dyn_par.update_configuration(para)
+            print str(resp)
+            self.desired_speed = 0.0
+            self.do_set_speed()
 
     def emulate_acc(self):
         #TODO Create acc implementation that handles accual time not just 0.1 sec
@@ -255,6 +283,7 @@ class Robot(object):
         self.path_index = 0
         self.desired_speed = 0.0
         self.acc = 0.0
+        self.last_acc = 0.0
 
         # Constants
         self.cruising_speed = 0.3
@@ -283,8 +312,10 @@ class Robot(object):
         g = rospy.Service('Robot'+str(id_nbr)+'/set_acc', SetAcc, self.set_acc)
 
         # Creating 'get_state' service
-        g = rospy.Service('Robot' + str(id_nbr) + '/get_state', GetState, self.get_state)
+        h = rospy.Service('Robot' + str(id_nbr) + '/get_state', GetState, self.get_state)
 
+        # Setting up a dynamic_parameter client
+        self.dyn_par = dynamic_reconfigure.client.Client("RosAria"+str(self.id_nbr))
 
 
 if __name__ == '__main__':

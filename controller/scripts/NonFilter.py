@@ -17,7 +17,7 @@ class NoFilter(object):
 if __name__ == '__main__':
     try:
         n = NoFilter(int(sys.argv[1]))
-        print "Filter setup done."
+        print "NonFilter setup done."
         rospy.spin()
 
     except rospy.ROSInterruptException:
