@@ -201,9 +201,9 @@ class Robot(object):
 	if self.angle_to_point < -math.pi:
 		self.angle_to_point = self.angle_to_point+2*math.pi
 	if self.angle_to_point < 0:
-		rotSpeed = math.fabs(self.angle_to_point)*(0.5/math.pi)
+		rotSpeed = math.fabs(self.angle_to_point)*(2.0/math.pi)
 	if self.angle_to_point > 0:
-		rotSpeed = -math.fabs(self.angle_to_point)*(0.5/math.pi)
+		rotSpeed = -math.fabs(self.angle_to_point)*(2.0/math.pi)
 
 	if math.fabs(self.angle_to_point)>1.0*math.pi/180:
 	    self.twist.angular.z = rotSpeed
