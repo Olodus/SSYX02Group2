@@ -31,11 +31,6 @@ class Robot(object):
 
     def update_state(self,data):
         self.state = data
-        if self.mission != -1:
-            mission_done = self.do_mission()
-            self.publish_twist()
-            if mission_done:
-                self.end_mission()
 
     def do_mission(self):
         self.twist = Twist()
@@ -296,6 +291,13 @@ if __name__ == '__main__':
     try:
         r = Robot(int(sys.argv[1]))
         print "Robot setup done"
+        while True:
+            if r.mission != -1:
+                mission_done = r.do_mission()
+                r.publish_twist()
+                if mission_done:
+                    r.end_mission()
+            rospy.sleep(0.1)
         rospy.spin()
 
     except rospy.ROSInterruptException:
