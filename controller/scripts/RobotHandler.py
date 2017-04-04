@@ -241,16 +241,25 @@ class Robot(object):
         return math.fabs(self.state.twist.twist.linear.x) <= 0.01 and math.fabs(self.state.twist.twist.angular.z) <= 0.01
 
     def parameter_acc(self):
-        if self.acc > 0:
-            para = {'trans_accel':math.fabs(self.acc),'trans_decel':math.fabs(self.acc)}
-            self.dyn_par.update_configuration(para)
-            self.desired_speed = self.max_speed
-            self.do_set_speed()
+        if math.fabs(self.last_acc-self.acc)>0.0001:
+            if self.acc > 0:
+                para = {'trans_accel':math.fabs(self.acc),'trans_decel':math.fabs(self.acc)}
+                self.dyn_par.update_configuration(para)
+                self.desired_speed = self.max_speed
+                self.do_set_speed()
+            else:
+                para = {'trans_accel':math.fabs(self.acc),'trans_decel':math.fabs(self.acc)}
+                self.dyn_par.update_configuration(para)
+                self.desired_speed = 0.0
+                self.do_set_speed()
         else:
-            para = {'trans_accel':math.fabs(self.acc),'trans_decel':math.fabs(self.acc)}
-            self.dyn_par.update_configuration(para)
-            self.desired_speed = 0.0
-            self.do_set_speed()
+            if self.acc > 0:
+                self.desired_speed = self.max_speed
+                self.do_set_speed()
+            else:
+                self.desired_speed = 0.0
+                self.do_set_speed()
+        self.last_acc = self.acc
 
     def emulate_acc(self):
         #TODO Create acc implementation that handles accual time not just 0.1 sec
