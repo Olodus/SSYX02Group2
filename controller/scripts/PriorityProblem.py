@@ -46,23 +46,42 @@ if __name__ == '__main__':
 
             # Now both robots are ready to enter the intersection
             # First set the speed they'll enter the problem with
-            r0.set_speed(0.5)
-            r1.set_speed(0.5)
+            r0.set_speed(0.3)
+            r1.set_speed(0.3)
             rospy.sleep(1.5)
             print "Both robots are now at correct speed"
 
             # Calculate how long it will take for r0 to reach ip
             r0state = r0.get_state().state
+	    r1state = r1.get_state().state
             r0dist2ip = math.sqrt(math.pow(r0state.pose.pose.position.x,2)+math.pow(r0state.pose.pose.position.y,2))
+	    r1dist2ip = math.sqrt(math.pow(r1state.pose.pose.position.x,2)+math.pow(r1state.pose.pose.position.y,2))
             t = r0dist2ip/r0state.twist.twist.linear.x
 
+	    print "time to cross for robot0 is: "+str(t)
+	    print "distance to intersection for robot0 is: "+str(r0dist2ip)
+	    print "velocity of robot0 is: "+str(r0state.twist.twist.linear.x)
             t = t + 2.0
             v = r1.get_state().state.twist.twist.linear.x
-            resp = r1.set_acc(-0.09)
+	    a = (2*(r1dist2ip-v*t)/t**2)
+	    print "acceleration for robot1 is: "+str(a)
+	    print "time to cross for robot1 is: "+str(t)
+	    print "velocity for robot1 is: "+str(v)
+	    print "distance to intersection for robot1 is: "+str(r1dist2ip)
+            resp = r1.set_acc(a)
 
             while r0.get_state().state.pose.pose.position.x < 0.0:
                 rospy.sleep(0.5)
+		#print "velocity for robot1 is: "+str(r1.get_state().state.twist.twist.linear.x)
 
+	    '''now = rospy.get_time()
+
+	    while r1.get_state().state.pose.pose.position.x < 0.0:
+	        rospy.sleep(0.1)
+
+	    now2 = rospy.get_time()
+	    print str(now2-now)
+	    '''
             print "r0 passed mid"
 
             r1.set_acc(0.3)
