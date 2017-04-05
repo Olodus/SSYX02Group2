@@ -260,6 +260,14 @@ class Robot(object):
                 self.desired_speed = 0.0
                 self.do_set_speed()
         self.last_acc = self.acc
+	timeNow = rospy.get_time()
+	timePassed1 = timeNow-self.startTime
+	if timePassed1-self.timePassed2 >= 1.0:
+		print "current position of robot"+str(self.id_nbr)+" is: x="+str(self.state.pose.pose.position.x)+", y="+str(self.state.pose.pose.position.y)
+		print "current velocity of robot"+str(self.id_nbr)+" is: "+str(self.state.twist.twist.linear.x)
+		timeNow = rospy.get_time()
+		print "time passed: "+str(timePassed1)
+		self.timePassed2 = timeNow-self.startTime
 
     def emulate_acc(self):
         #TODO Create acc implementation that handles accual time not just 0.1 sec
@@ -274,6 +282,8 @@ class Robot(object):
         self.pub = rospy.Publisher("RosAria"+str(id_nbr)+"/cmd_vel", Twist, queue_size=1)
         self.sub = rospy.Subscriber("Filter"+str(id_nbr)+"/state", Odometry, self.update_state)
         self.twist = Twist()
+	self.startTime = rospy.get_time()
+	self.timePassed2 = 0.0
 
         # State
         self.state = Odometry()
@@ -322,7 +332,7 @@ class Robot(object):
         h = rospy.Service('Robot' + str(id_nbr) + '/get_state', GetState, self.get_state)
 
         # Setting up a dynamic_parameter client
-        self.dyn_par = dynamic_reconfigure.client.Client("RosAria"+str(self.id_nbr))
+        self.dyn_par = dynamic_reconfigure.client.Client("RosAria"+str(self.id_nbr), timeout=10)
 
 
 if __name__ == '__main__':
@@ -335,7 +345,7 @@ if __name__ == '__main__':
                 r.publish_twist()
                 if mission_done:
                     r.end_mission()
-            rospy.sleep(0.1)
+            #rospy.sleep(0.1)
         rospy.spin()
 
     except rospy.ROSInterruptException:
