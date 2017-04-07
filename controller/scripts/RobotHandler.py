@@ -241,7 +241,8 @@ class Robot(object):
         return math.fabs(self.state.twist.twist.linear.x) <= 0.01 and math.fabs(self.state.twist.twist.angular.z) <= 0.01
 
     def parameter_acc(self):
-        if math.fabs(self.last_acc-self.acc)>0.0001:
+	########what is a good value here?
+        if math.fabs(self.last_acc-self.acc)>0:
             if self.acc > 0:
                 para = {'trans_accel':math.fabs(self.acc),'trans_decel':math.fabs(self.acc)}
                 self.dyn_par.update_configuration(para)
@@ -262,7 +263,7 @@ class Robot(object):
         self.last_acc = self.acc
 	timeNow = rospy.get_time()
 	timePassed1 = timeNow-self.startTime
-	if timePassed1-self.timePassed2 >= 1.0:
+	if timePassed1-self.timePassed2 >= 3.0:
 		print "current position of robot"+str(self.id_nbr)+" is: x="+str(self.state.pose.pose.position.x)+", y="+str(self.state.pose.pose.position.y)
 		print "current velocity of robot"+str(self.id_nbr)+" is: "+str(self.state.twist.twist.linear.x)
 		timeNow = rospy.get_time()
