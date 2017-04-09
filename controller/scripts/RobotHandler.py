@@ -261,6 +261,7 @@ class Robot(object):
                 self.desired_speed = 0.0
                 self.do_set_speed()
         self.last_acc = self.acc
+	'''
 	timeNow = rospy.get_time()
 	timePassed1 = timeNow-self.startTime
 	if timePassed1-self.timePassed2 >= 3.0:
@@ -269,6 +270,7 @@ class Robot(object):
 		timeNow = rospy.get_time()
 		print "time passed: "+str(timePassed1)
 		self.timePassed2 = timeNow-self.startTime
+	'''
 
     def emulate_acc(self):
         #TODO Create acc implementation that handles accual time not just 0.1 sec
