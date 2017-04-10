@@ -68,21 +68,23 @@ if __name__ == '__main__':
 	    print "speed set for robot1 is: "+str(rand1)
 
             # Calculate how long it will take for r0 to reach ip
-            r0state = r0.get_state().state
-	    r1state = r1.get_state().state
+	    
+	    #dont think its a good idea to store state in variable
+            #r0state = r0.get_state().state
+	    #r1state = r1.get_state().state
 	    if rand0 <= 0.25 or rand0 >= 0.4 or rand1 <= 0.25 or rand1 >= 0.4:
 		displacement = -2.0
 	    else:
 	    	displacement = -1.0
-            r0dist2ip = math.sqrt(math.pow(r0state.pose.pose.position.x,2)+math.pow(r0state.pose.pose.position.y,2))
-	    r1dist2ip = math.sqrt(math.pow(r1state.pose.pose.position.x,2)+math.pow(displacement-r1state.pose.pose.position.y,2))
-            t = r0dist2ip/r0state.twist.twist.linear.x
+            r0dist2ip = math.sqrt(math.pow(r0.get_state().state.pose.pose.position.x,2)+math.pow(r0.get_state().state.pose.pose.position.y,2))
+	    r1dist2ip = math.sqrt(math.pow(r1.get_state().state.pose.pose.position.x,2)+math.pow(displacement-r1.get_state().state.pose.pose.position.y,2))
+            t = r0dist2ip/r0.get_state().state.twist.twist.linear.x
 
 	    print "--------------------------------------"
 	    print "number of crossings is: "+str(numberOfCrossings)
 	    print "time to cross [0,0] for robot0 is: "+str(t)
 	    print "distance to intersection for robot0 is: "+str(r0dist2ip)
-	    print "velocity of robot0 is: "+str(r0state.twist.twist.linear.x)
+	    print "velocity of robot0 is: "+str(r0.get_state().state.twist.twist.linear.x)
             #t = t - 20.0
             v = r1.get_state().state.twist.twist.linear.x
 	    a = 2*(r1dist2ip-v*t)/t**2
@@ -91,12 +93,12 @@ if __name__ == '__main__':
 		#t = t - 10.0
 		#1.0 gives possible collision with high velocities
 		displacement = -displacement
-		r1dist2ip = math.sqrt(math.pow(r1state.pose.pose.position.x,2)+math.pow(displacement-r1state.pose.pose.position.y,2))
+		r1dist2ip = math.sqrt(math.pow(r1.get_state().state.pose.pose.position.x,2)+math.pow(displacement-r1.get_state().state.pose.pose.position.y,2))
 		a = 2*(r1dist2ip-v*t)/t**2
 		vfinal = v+a*t
 		while vfinal < 0 or math.fabs(a) < 0.005:
 			displacement = displacement + 0.1
-			r1dist2ip = math.sqrt(math.pow(r1state.pose.pose.position.x,2)+math.pow(displacement-r1state.pose.pose.position.y,2))
+			r1dist2ip = math.sqrt(math.pow(r1.get_state().state.pose.pose.position.x,2)+math.pow(displacement-r1.get_state().state.pose.pose.position.y,2))
 		    	a = 2*(r1dist2ip-v*t)/t**2
 			vfinal = v+a*t
 		print "robot1 passes first now!"

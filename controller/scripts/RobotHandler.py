@@ -348,7 +348,7 @@ if __name__ == '__main__':
                 r.publish_twist()
                 if mission_done:
                     r.end_mission()
-            #rospy.sleep(0.1)
+            rospy.sleep(0.1)
         rospy.spin()
 
     except rospy.ROSInterruptException:
