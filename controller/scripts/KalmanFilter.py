@@ -21,7 +21,7 @@ class KalmanFilter(object):
         self.state = np.array([[0],[0],[0],[0],[0],[0]])
 
     def new_measurement(self, data):
-        self.state = Kalman.update(self.kf,self.state, data.twist.twist.linear.x,data.twist.twist.angular.z,0.1,[data.pose.pose.position.x, data.pose.pose.position.y])
+        self.state = Kalman.update(self.kf,self.state, data.twist.twist.linear.x,data.twist.twist.angular.z,0.1, [data.pose.pose.position.x, data.pose.pose.position.y])
         self.state_out.pose.pose.position.x = self.state[0]
         self.state_out.pose.pose.position.y = self.state[2]
         self.state_out.twist.twist.linear.x = math.sqrt(self.state[1]**2+self.state[3]**2)
@@ -47,7 +47,6 @@ if __name__ == '__main__':
         k = KalmanFilter(int(sys.argv[1]))
         print "Filter setup done."
         rospy.spin()
-	rospy.sleep(0.1)
 
     except rospy.ROSInterruptException:
         pass

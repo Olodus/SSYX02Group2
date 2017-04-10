@@ -173,7 +173,7 @@ class Robot(object):
         length = self.length_to_point
 
         self.aim_point = self.go_point
-        if not self.do_aim_at_point():
+        if not self.small_steer():
             return False
         elif length >= 1.0:
             self.desired_speed = 0.5
@@ -240,9 +240,17 @@ class Robot(object):
         self.twist.angular.z = 0.0
         return math.fabs(self.state.twist.twist.linear.x) <= 0.01 and math.fabs(self.state.twist.twist.angular.z) <= 0.01
 
+	
+    def small_steer(self):
+	self.do_aim_at_point()
+	if math.fabs(self.twist.angular.z) < math.pi/6:
+	    return True
+	else:
+	    return False
+
     def parameter_acc(self):
 	########what is a good value here?
-        if math.fabs(self.last_acc-self.acc)>0:
+        if math.fabs(self.last_acc-self.acc)>0.00000001:
             if self.acc > 0:
                 para = {'trans_accel':math.fabs(self.acc),'trans_decel':math.fabs(self.acc)}
                 self.dyn_par.update_configuration(para)
