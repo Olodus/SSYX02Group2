@@ -29,18 +29,18 @@ class UWBPoseHandler(object):
 
     def measure(self, data):
         # Take orientation and velocity from pose
-        self.measurement.pose.pose.orientation = data.pose.pose.orientation
+        #self.measurement.pose.pose.orientation = data.pose.pose.orientation
         self.measurement.twist = data.twist
 
         # The rest is taken from UWB   as of now takes a mean of 10 measurements
         xarr = np.array([], dtype=np.float32)
         yarr = np.array([], dtype=np.float32)
         i = 0
-        n = 10
+        n = 5
         error_count = 0
         while i < n and error_count < 100:
-            print("remaining time: " + str((n - i) * 0.14/60))
-            print("Take:" + str(i))
+            #print("remaining time: " + str((n - i) * 0.14/60))
+            #print("Take:" + str(i))
             tmp_pos = np.array([],
                              dtype=np.float32)
             try:
@@ -55,20 +55,20 @@ class UWBPoseHandler(object):
                     i += 1
                 else:
                     error_count += 1
-                    print("Invalid reading, check if all the unicorns are at home")
+                    #print("Invalid reading, check if all the unicorns are at home")
             except rospy.ServiceException as exc:
-                print("Service did not process request: " + str(exc))
+                pass#print("Service did not process request: " + str(exc))
             #print(str(tmp_pos))
 
         xmean = np.mean(xarr)
         ymean = np.mean(yarr)
-        cov = np.cov(xarr,yarr)
-        covx = np.cov(xarr)
-        covy = np.cov(yarr)
+        #cov = np.cov(xarr,yarr)
+        #covx = np.cov(xarr)
+        #covy = np.cov(yarr)
 
         self.measurement.pose.pose.position.x = xmean
         self.measurement.pose.pose.position.y = ymean
-        self.measurement.pose.covariance = cov
+        #self.measurement.pose.covariance = cov
 
         self.pub.publish(self.measurement)
 
