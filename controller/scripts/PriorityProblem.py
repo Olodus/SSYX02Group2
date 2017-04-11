@@ -17,17 +17,30 @@ if __name__ == '__main__':
         r0 = RobotServices(0)
         r1 = RobotServices(1)
 	numberOfCrossings = 0
+
+	'''
+	gdist1 = 1.0
+	gdist2 = 2.0
+	pdist1 = 5.0
+	pdist2 = 3.0
+	'''
+	
+	gdist1 = 1.25
+	gdist2 = 4.0
+	pdist1 = 2.0
+	pdist2 = 1.0
+	
         print "Controller setup done"
 
         while True:
             # Both robots go to their start points
             p0 = Point()
-            p0.x = -5.0
+            p0.x = -pdist1
             p0.y = 0.0
             r0.go_to_point(p0)
             p1 = Point()
             p1.x = 0.0
-            p1.y = -5.0
+            p1.y = -pdist1
             r1.go_to_point(p1)
             rospy.sleep(0.5)
             h.wait_til_both_ready(r0,r1)
@@ -35,12 +48,12 @@ if __name__ == '__main__':
 
             # Both robots aim at the other side of the intersections
             p0 = Point()
-            p0.x = 3.0
+            p0.x = pdist2
             p0.y = 0.0
             r0.aim_at_point(p0)
             p1 = Point()
             p1.x = 0.0
-            p1.y = 3.0
+            p1.y = pdist2
             r1.aim_at_point(p1)
             rospy.sleep(0.5)
             h.wait_til_both_ready(r0, r1)
@@ -48,21 +61,25 @@ if __name__ == '__main__':
 
             # Now both robots are ready to enter the intersection
             # First set the speed they'll enter the problem with
-
-	    r0intvel = [0.1,0.5]
-	    r1intvel = [0.1,0.5]
+	    '''
+	    r0intvel = [0.1,0.1]
+	    r1intvel = [0.2,0.2]
 	    rand0 = random.uniform(r0intvel[0],r1intvel[1])
 	    rand1 = random.uniform(r0intvel[0],r1intvel[1])
-	    '''
-	    rand0 = 0.406497472315
-	    rand1 = 0.314250457359
-	    '''
+
             r0.set_speed(rand0)
             r1.set_speed(rand1)
+	    
 	    if rand0 < rand1:
 	    	rospy.sleep(rand1*6.0)
 	    else:
 		rospy.sleep(rand0*6.0)
+	    '''
+	    rand0 = 0.1
+	    rand1 = 0.3
+	    r0.set_speed(rand0)
+	    r1.set_speed(rand1)
+	    rospy.sleep(1.5)
             print "Both robots are now at correct speeds"
 	    print "speed set for robot0 is: "+str(rand0)
 	    print "speed set for robot1 is: "+str(rand1)
@@ -73,9 +90,9 @@ if __name__ == '__main__':
             #r0state = r0.get_state().state
 	    #r1state = r1.get_state().state
 	    if rand0 <= 0.25 or rand0 >= 0.4 or rand1 <= 0.25 or rand1 >= 0.4:
-		displacement = -2.0
+		displacement = -gdist2
 	    else:
-	    	displacement = -1.0
+	    	displacement = -gdist1
             r0dist2ip = math.sqrt(math.pow(r0.get_state().state.pose.pose.position.x,2)+math.pow(r0.get_state().state.pose.pose.position.y,2))
 	    r1dist2ip = math.sqrt(math.pow(r1.get_state().state.pose.pose.position.x,2)+math.pow(displacement-r1.get_state().state.pose.pose.position.y,2))
             t = r0dist2ip/r0.get_state().state.twist.twist.linear.x
@@ -85,19 +102,17 @@ if __name__ == '__main__':
 	    print "time to cross [0,0] for robot0 is: "+str(t)
 	    print "distance to intersection for robot0 is: "+str(r0dist2ip)
 	    print "velocity of robot0 is: "+str(r0.get_state().state.twist.twist.linear.x)
-            #t = t - 20.0
             v = r1.get_state().state.twist.twist.linear.x
 	    a = 2*(r1dist2ip-v*t)/t**2
 	    vfinal = v+a*t
 	    if vfinal < 0 or math.fabs(a) < 0.005:
-		#t = t - 10.0
 		#1.0 gives possible collision with high velocities
 		displacement = -displacement
 		r1dist2ip = math.sqrt(math.pow(r1.get_state().state.pose.pose.position.x,2)+math.pow(displacement-r1.get_state().state.pose.pose.position.y,2))
 		a = 2*(r1dist2ip-v*t)/t**2
 		vfinal = v+a*t
 		while vfinal < 0 or math.fabs(a) < 0.005:
-			displacement = displacement + 0.1
+			displacement = displacement + 0.05
 			r1dist2ip = math.sqrt(math.pow(r1.get_state().state.pose.pose.position.x,2)+math.pow(displacement-r1.get_state().state.pose.pose.position.y,2))
 		    	a = 2*(r1dist2ip-v*t)/t**2
 			vfinal = v+a*t
@@ -114,10 +129,10 @@ if __name__ == '__main__':
 
             while r0.get_state().state.pose.pose.position.x < 0.0:
 		#ifi r1 has large displacement, keep it from going past the frame
-		if r1.get_state().state.pose.pose.position.y >= 2.0:
+		if r1.get_state().state.pose.pose.position.y >= 0.7*pdist2:
 			p1 = Point()
             		p1.x = 0.0
-            		p1.y = 3.0
+            		p1.y = pdist2
             		r1.go_to_point(p1)
 			rospy.sleep(0.5)
                 rospy.sleep(0.5)
@@ -130,28 +145,28 @@ if __name__ == '__main__':
 	    #after one has passed intersection point?
 
             r1.set_acc(0.1)
-            while r0.get_state().state.pose.pose.position.x < 2.0 or r1.get_state().state.pose.pose.position.y < 2.0:
-		if r1.get_state().state.pose.pose.position.y >= 2.0:
+            while r0.get_state().state.pose.pose.position.x < 0.7*pdist2 or r1.get_state().state.pose.pose.position.y < 0.7*pdist2:
+		if r1.get_state().state.pose.pose.position.y >= 0.7*pdist2:
 			p1 = Point()
             		p1.x = 0.0
-            		p1.y = 3.0
+            		p1.y = pdist2
             		r1.go_to_point(p1)
 			rospy.sleep(0.5)
-		if r0.get_state().state.pose.pose.position.x >= 2.0:
+		if r0.get_state().state.pose.pose.position.x >= 0.7*pdist2:
 			p0 = Point()
-            		p0.x = 3.0
+            		p0.x = pdist2
             		p0.y = 0.0
             		r0.go_to_point(p0)
 			rospy.sleep(0.5)
                 rospy.sleep(0.5)
 
             p0 = Point()
-            p0.x = 3.0
+            p0.x = pdist2
             p0.y = 0.0
             r0.go_to_point(p0)
             p1 = Point()
             p1.x = 0.0
-            p1.y = 3.0
+            p1.y = pdist2
             r1.go_to_point(p1)
             rospy.sleep(0.5)
 	    

@@ -243,7 +243,7 @@ class Robot(object):
 	
     def small_steer(self):
 	self.do_aim_at_point()
-	if math.fabs(self.twist.angular.z) < math.pi/6:
+	if math.fabs(self.twist.angular.z) < math.pi/12:
 	    return True
 	else:
 	    return False
