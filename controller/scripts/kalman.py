@@ -131,7 +131,7 @@ class Kalman(object):
 #        print  (r)
 
         s = np.add(np.dot(np.dot(h, p_k_k1), h.T), r)
-        #inte säker på om detta är rätt
+
         '''
         4. Calculate the Kalman gain using
         K = P_k|k-1 * H^T * S_k^-1
@@ -150,6 +150,6 @@ class Kalman(object):
         self.p = np.dot(np.eye(6) - np.dot(kalman_gain, h), p_k_k1)
         self.q = np.zeros((6, 6))  # reset control noise after correction
 
-        print (self.p)
+        #print (self.p)
 
         return x_k_k

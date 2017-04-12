@@ -4,6 +4,7 @@ import rospy
 import sys
 from nav_msgs.msg import Odometry
 from kalman import Kalman
+#from Kalman123 import Kalman
 import math
 import tf
 import numpy as np
@@ -20,17 +21,18 @@ class KalmanFilter(object):
         self.state = np.array([[0],[0],[0],[0],[0],[0]])
 
     def new_measurement(self, data):
-        self.state = Kalman.update(self.kf,self.state,data.twist.twist.linear.x,data.twist.twist.angular.z,0.1,[data.pose.pose.position.x, data.pose.pose.position.y])
+        self.state = Kalman.update(self.kf,self.state, data.twist.twist.linear.x,data.twist.twist.angular.z,0.1, [data.pose.pose.position.x, data.pose.pose.position.y])
         self.state_out.pose.pose.position.x = self.state[0]
         self.state_out.pose.pose.position.y = self.state[2]
         self.state_out.twist.twist.linear.x = math.sqrt(self.state[1]**2+self.state[3]**2)
-        quat = tf.transformations.quaternion_from_euler(0.0, 0.0, self.state[4])
+	angle = 1+self.state[4]-1
+        quat = tf.transformations.quaternion_from_euler(0.0, 0.0, angle)
         self.state_out.pose.pose.orientation.x = quat[0]
         self.state_out.pose.pose.orientation.y = quat[1]
         self.state_out.pose.pose.orientation.z = quat[2]
         self.state_out.pose.pose.orientation.w = quat[3]
         self.state_out.twist.twist.angular.z = self.state[5]
-        print str(self.state)
+        #print str(self.state)
 
         self.pub.publish(self.state_out)
 

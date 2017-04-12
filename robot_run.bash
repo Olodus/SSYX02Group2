@@ -2,14 +2,21 @@
 
 rosrun controller PoseHandler.py 0 &
 sleep 1
-rosrun controller PoseHandler.py 1 &
-sleep 1
-rosrun controller NonFilter.py 0 &
-sleep 1
-rosrun controller NonFilter.py 1 &
+#rosrun controller PoseHandler.py 1 &
+#sleep 1
+rosrun controller KalmanFilter.py 0 &
+#sleep 1
+#rosrun controller NonFilter.py 1 &
 sleep 1
 rosrun controller RobotHandler.py 0 &
+#sleep 1
+#rosrun controller RobotHandler.py 1 &
 sleep 1
-rosrun controller RobotHandler.py 1 &
-sleep 1
-rosrun controller PriorityProblem.py 
+if [[ $* == *-priority* ]]
+then 
+	rosrun controller testKalman.py
+fi
+if [[ $* == *-reservation* ]]
+then
+	rosrun controller ReservationProblem.py
+fi

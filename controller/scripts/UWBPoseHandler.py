@@ -18,25 +18,25 @@ class UWBPoseHandler(object):
 
     def __init__(self, robot_id):
         rospy.init_node('Sensor'+str(robot_id))
-        self.pub = rospy.Publisher("Sensor"+str(robot_id)+"/measurement", Odometry, queue_size=1)
-        self.sub = rospy.Subscriber("RosAria"+str(robot_id)+"/pose", Odometry, self.measure)
-
         srv = 'get_coord' + str(0)
         rospy.wait_for_service(srv)
-        get_coords = rospy.ServiceProxy(srv, GetCoord)
-
+        self.get_coords = rospy.ServiceProxy(srv, GetCoord)
         self.measurement = Odometry()
+	self.pub = rospy.Publisher("Sensor"+str(robot_id)+"/measurement", Odometry, queue_size=1)
+        self.sub = rospy.Subscriber("RosAria"+str(robot_id)+"/pose", Odometry, self.measure)
+	
 
     def measure(self, data):
         # Take orientation and velocity from pose
         #self.measurement.pose.pose.orientation = data.pose.pose.orientation
+	self.measurement = Odometry()
         self.measurement.twist = data.twist
 
         # The rest is taken from UWB   as of now takes a mean of 10 measurements
         xarr = np.array([], dtype=np.float32)
         yarr = np.array([], dtype=np.float32)
         i = 0
-        n = 5
+        n = 1
         error_count = 0
         while i < n and error_count < 100:
             #print("remaining time: " + str((n - i) * 0.14/60))
@@ -46,7 +46,7 @@ class UWBPoseHandler(object):
             try:
                 #startTime = time.time()
                 f = Floats()
-                f = get_coords(1)
+                f = self.get_coords(1)
                 #stopTime = time.time()
                 tmp_pos = f.data.data
                 if np.size(tmp_pos) != 3:
@@ -69,12 +69,13 @@ class UWBPoseHandler(object):
         self.measurement.pose.pose.position.x = xmean
         self.measurement.pose.pose.position.y = ymean
         #self.measurement.pose.covariance = cov
-
         self.pub.publish(self.measurement)
 
 if __name__ == '__main__':
     try:
-        UWBPoseHandler(int(sys.argv[1]))
+        u = UWBPoseHandler(int(sys.argv[1]))
+	print "Sensor setup done"
+	rospy.spin()
 
     except rospy.ROSInterruptException:
         pass
