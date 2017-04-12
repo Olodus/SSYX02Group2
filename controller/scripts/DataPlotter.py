@@ -29,8 +29,8 @@ class RobotData(object):
 
 if __name__ == '__main__':
     try:
-        rospy.init_node('Logger')
         nbr_of_robots = int(sys.argv[1])
+        rospy.init_node('Logger')
         for i in range(0,nbr_of_robots):
             rd = RobotData(i)
             rds[i] = rd
