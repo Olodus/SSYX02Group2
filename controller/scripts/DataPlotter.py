@@ -44,8 +44,8 @@ if __name__ == '__main__':
 
         while True:
             for i in range(0,nbr_of_robots):
-                plt.scatter(rds[i].sensor_data_x,rds[i].sensor_data_y,c="r")
-                plt.scatter(rds[i].filter_data_x,rds[i].filter_data_y,c="g")
+                plt.scatter(rds[i].sensor_data_x[len(rds[i].sensor_data_x)],rds[i].sensor_data_y[len(rds[i].sensor_data_y)],c="r")
+                plt.scatter(rds[i].filter_data_x[len(rds[i].filter_data_x)],rds[i].filter_data_y[len(rds[i].filter_data_y)],c="g")
             plt.pause(0.1)
 
 
