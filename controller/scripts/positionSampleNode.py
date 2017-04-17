@@ -78,8 +78,8 @@ if __name__ == "__main__":
     print "yesterday..."
     try:
         runs = int (sys.argv[1])
-        filenumber = int(sys.argv[2])
+        #filenumber = int(sys.argv[2])
         print("start! Number of iterations: " + str(runs))
-        save_coordinates(runs, filenumber)
+        save_coordinates(runs)
     except rospy.ROSInterruptException:
         print("WTF???")
