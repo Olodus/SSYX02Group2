@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-PKG = 'robotclient'
-import roslib; roslib.load_manifest(PKG)
-from robotclient.srv import *
-from robotclient.msg import *
+from controller.srv import *
+from controller.msg import *
 import Measure
 import rospy
 import MessageHandler

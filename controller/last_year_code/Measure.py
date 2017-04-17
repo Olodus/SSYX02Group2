@@ -1,11 +1,9 @@
 #!/usr/bin/env python
-PKG = 'robotclient'
 
 import roslib;
-roslib.load_manifest(PKG)
 import rospy
 from rospy.numpy_msg import numpy_msg
-from robotclient.msg import *
+from controller.msg import *
 import MessageHandler
 import Anchor
 import numpy as np
