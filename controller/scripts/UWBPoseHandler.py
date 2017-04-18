@@ -18,21 +18,24 @@ This is a Handler which takes the position from UWB and the angle from Pose
 class UWBPoseHandler(object):
 
     def __init__(self, robot_id):
-        rospy.init_node('Sensor'+str(robot_id))
+        #rospy.init_node('Sensor'+str(robot_id))
         srv = 'get_coord' + str(robot_id)
         rospy.wait_for_service(srv)
         self.get_coords = rospy.ServiceProxy(srv, GetCoord)
         self.measurement = Odometry()
         self.pub = rospy.Publisher("Sensor"+str(robot_id)+"/measurement", Odometry, queue_size=1)
-        self.sub = rospy.Subscriber("RosAria"+str(robot_id)+"/pose", Odometry, self.measure)
+        self.sub = rospy.Subscriber("RosAria"+str(robot_id)+"/pose", Odometry, self.update)
+        self.state = Odometry()
         self.covariance_sent = False
 
+    def update(self,data):
+        self.state = data
 
-    def measure(self, data):
+    def measure(self):
         self.measurement = Odometry()
 
         # Take velocity from pose
-        self.measurement.twist = data.twist
+        self.measurement.twist = self.state.twist
 
         # The rest is taken from UWB   as of now takes a mean of 10 measurements
         try:
@@ -80,12 +83,21 @@ class UWBPoseHandler(object):
 
 if __name__ == '__main__':
     try:
-        u = UWBPoseHandler(int(sys.argv[1]))
+        #u = UWBPoseHandler(int(sys.argv[1]))
+        u0 = UWBPoseHandler(0)
+        u1 = UWBPoseHandler(1)
         #c = u.measure_cov()
         #Send Covariance
-        u.covariance_sent = True
-	print "Sensor setup done"
-	rospy.spin()
+        u0.covariance_sent = True
+        u1.covariance_sent = True
+	    print "Sensor setup done"
+	    #rospy.spin()
+
+        while True:
+            u0.measure()
+            u1.measure()
+            rospy.sleep(0.1)
+
 
     except rospy.ROSInterruptException:
         pass
