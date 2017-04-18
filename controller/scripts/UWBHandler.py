@@ -21,8 +21,17 @@ class UWBHandler(object):
 
     def measure():
         # call UWB service for measurement
-
-        # transform to Odometry
+        try:
+            f = Floats()
+            f = self.get_coords(1)
+            # transform to Odometry
+            x = f.data.data[0]
+            y = f.data.data[1]
+            self.measurement = Odometry()
+            self.measurement.pose.pose.position.x = x
+            self.measurement.pose.pose.position.y = y
+        except rospy.rospy.ServiceException:
+            pass
 
         # publish Odometry
         self.pub.publish(self.measurement)
@@ -35,7 +44,7 @@ if __name__ == '__main__':
 
         while True:
             uwb.measure()
-            rospy.sleep(0.1)
+            rospy.sleep(0.05)
 
     except rospy.ROSInterruptException:
         pass
