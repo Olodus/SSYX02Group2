@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
 	gdist1 = 1.25
 	gdist2 = 4.0
-	pdist1 = 2.0
+	pdist1 = 1.5
 	pdist2 = 1.0
 
         print "Controller setup done"
