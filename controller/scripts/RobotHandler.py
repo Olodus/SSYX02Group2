@@ -222,6 +222,7 @@ class Robot(object):
 
 	if math.fabs(self.angle_to_point)>1.0*math.pi/180:
 	    self.twist.angular.z = rotSpeed
+        self.twist.linear.x = 0.1
 	    return False
         else:
             self.twist.angular.z = 0.0
@@ -240,7 +241,7 @@ class Robot(object):
         self.twist.angular.z = 0.0
         return math.fabs(self.state.twist.twist.linear.x) <= 0.01 and math.fabs(self.state.twist.twist.angular.z) <= 0.01
 
-	
+
     def small_steer(self):
 	self.do_aim_at_point()
 	if math.fabs(self.twist.angular.z) < math.pi/12:
