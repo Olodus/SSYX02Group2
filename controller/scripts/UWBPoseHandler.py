@@ -81,7 +81,7 @@ class UWBPoseHandler(object):
 if __name__ == '__main__':
     try:
         u = UWBPoseHandler(int(sys.argv[1]))
-        c = u.measure_cov()
+        #c = u.measure_cov()
         #Send Covariance
         u.covariance_sent = True
 	print "Sensor setup done"
