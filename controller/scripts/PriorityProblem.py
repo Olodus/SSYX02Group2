@@ -24,13 +24,19 @@ if __name__ == '__main__':
 	pdist1 = 5.0
 	pdist2 = 3.0
 	'''
-	
+
 	gdist1 = 1.25
 	gdist2 = 4.0
 	pdist1 = 2.0
 	pdist2 = 1.0
-	
+
         print "Controller setup done"
+
+        r0.set_speed(0.3)
+        r1.set_speed(0.3)
+        rospy.sleep(1.0)
+        r0.stop()
+        r1.stop()
 
         while True:
             # Both robots go to their start points
@@ -69,7 +75,7 @@ if __name__ == '__main__':
 
             r0.set_speed(rand0)
             r1.set_speed(rand1)
-	    
+
 	    if rand0 < rand1:
 	    	rospy.sleep(rand1*6.0)
 	    else:
@@ -85,7 +91,7 @@ if __name__ == '__main__':
 	    print "speed set for robot1 is: "+str(rand1)
 
             # Calculate how long it will take for r0 to reach ip
-	    
+
 	    #dont think its a good idea to store state in variable
             #r0state = r0.get_state().state
 	    #r1state = r1.get_state().state
@@ -125,7 +131,7 @@ if __name__ == '__main__':
 	    print "velocity for robot1 is: "+str(v)
 	    print "acceleration for robot1 is: "+str(a)
 	    print "--------------------------------------"
-            resp = r1.set_acc(a) 
+            resp = r1.set_acc(a)
 
             while r0.get_state().state.pose.pose.position.x < 0.0:
 		#ifi r1 has large displacement, keep it from going past the frame
@@ -169,7 +175,7 @@ if __name__ == '__main__':
             p1.y = pdist2
             r1.go_to_point(p1)
             rospy.sleep(0.5)
-	    
+
             h.wait_til_both_ready(r0, r1)
 
             temp_r = r0
