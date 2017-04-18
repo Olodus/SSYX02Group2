@@ -43,7 +43,7 @@ class UWBPoseHandler(object):
             y = f.data.data[1]
             self.measurement.pose.pose.position.x = x
             self.measurement.pose.pose.position.y = y
-        except rospy.rospy.ServiceException:
+        except rospy.ServiceException:
             print "GetCoord service not responding"
 
         if self.covariance_sent:
