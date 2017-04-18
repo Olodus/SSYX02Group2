@@ -9,6 +9,7 @@ import numpy as np
 from rospy.numpy_msg import numpy_msg
 from robotclient.msg import Floats
 from robotclient.srv import *
+import matplotlib.pyplot as plt
 
 '''
 This is a Handler which takes the position from UWB and the angle from Pose
@@ -24,6 +25,7 @@ class UWBPoseHandler(object):
         self.measurement = Odometry()
         self.pub = rospy.Publisher("Sensor"+str(robot_id)+"/measurement", Odometry, queue_size=1)
         self.sub = rospy.Subscriber("RosAria"+str(robot_id)+"/pose", Odometry, self.measure)
+        self.covariance_sent = False
 
 
     def measure(self, data):
@@ -44,11 +46,44 @@ class UWBPoseHandler(object):
         except rospy.rospy.ServiceException:
             print "GetCoord service not responding"
 
-        self.pub.publish(self.measurement)
+        if self.covariance_sent:
+            self.pub.publish(self.measurement)
+
+    def measure_cov(self):
+        n = 100
+        xarr = np.array([], dtype=np.float32)
+        yarr = np.array([], dtype=np.float32)
+        i = 0
+        error_count = 0
+        while i < n and error_count < 100:
+            tmp_pos = np.array([], dtype=np.float32)
+            try:
+                f = Floats()
+                f = get_coords(1)
+                tmp_pos = f.data.data
+                if np.size(tmp_pos) != 3:
+                    xarr = np.append(xarr, tmp_pos[0])
+                    yarr = np.append(yarr, tmp_pos[1])
+                    i += 1
+                else:
+                    error_count += 1
+                    print("Invalid reading, check if all the unicorns are at home")
+            except rospy.ServiceException as exc:
+                print("Service did not process request: " + str(exc))
+
+        cov = np.cov(xarr,yarr)
+        plt.plot(xarr,yarr)
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.savefig('Covariance.png')
+        return cov
 
 if __name__ == '__main__':
     try:
         u = UWBPoseHandler(int(sys.argv[1]))
+        c = u.measure_cov()
+        #Send Covariance
+        u.covariance_sent = True
 	print "Sensor setup done"
 	rospy.spin()
 
