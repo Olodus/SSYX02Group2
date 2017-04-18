@@ -59,7 +59,7 @@ class UWBPoseHandler(object):
             tmp_pos = np.array([], dtype=np.float32)
             try:
                 f = Floats()
-                f = get_coords(1)
+                f = self.get_coords(1)
                 tmp_pos = f.data.data
                 if np.size(tmp_pos) != 3:
                     xarr = np.append(xarr, tmp_pos[0])
