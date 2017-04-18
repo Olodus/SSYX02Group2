@@ -80,6 +80,6 @@ if __name__ == "__main__":
         runs = int (sys.argv[1])
         robot_id = int(sys.argv[2])
         print("start! Number of iterations: " + str(runs))
-        save_coordinates(runs,rid)
+        save_coordinates(runs,robot_id)
     except rospy.ROSInterruptException:
         print("WTF???")

@@ -15,7 +15,7 @@ class KalmanFilter(object):
         rospy.init_node('Filter'+str(robot_id))
 
         self.pub = rospy.Publisher("Filter"+str(robot_id)+"/state", Odometry, queue_size=1)
-        self.sub = rospy.Subscriber("Sensor"+str(robot_id)+"/measurement", Odometry, self.new_measurement)
+        self.sub = rospy.Subscriber("Sensor/measurement"+str(robot_id), Odometry, self.new_measurement)
         self.kf = Kalman()
         self.state_out = Odometry()
         self.state = np.array([[0],[0],[0],[0],[0],[0]])

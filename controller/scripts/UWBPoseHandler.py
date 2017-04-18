@@ -23,7 +23,7 @@ class UWBPoseHandler(object):
         rospy.wait_for_service(srv)
         self.get_coords = rospy.ServiceProxy(srv, GetCoord)
         self.measurement = Odometry()
-        self.pub = rospy.Publisher("Sensor"+str(robot_id)+"/measurement", Odometry, queue_size=1)
+        self.pub = rospy.Publisher("Sensor/measurement"+str(robot_id), Odometry, queue_size=1)
         self.sub = rospy.Subscriber("RosAria"+str(robot_id)+"/pose", Odometry, self.update)
         self.state = Odometry()
         self.covariance_sent = False
@@ -83,6 +83,7 @@ class UWBPoseHandler(object):
 
 if __name__ == '__main__':
     try:
+	rospy.init_node('Sensor')
         #u = UWBPoseHandler(int(sys.argv[1]))
         u0 = UWBPoseHandler(0)
         u1 = UWBPoseHandler(1)
@@ -90,8 +91,8 @@ if __name__ == '__main__':
         #Send Covariance
         u0.covariance_sent = True
         u1.covariance_sent = True
-	    print "Sensor setup done"
-	    #rospy.spin()
+	print "Sensor setup done"
+	#rospy.spin()
 
         while True:
             u0.measure()
