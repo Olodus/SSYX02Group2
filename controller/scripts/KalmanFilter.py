@@ -36,11 +36,6 @@ class KalmanFilter(object):
 
         self.pub.publish(self.state_out)
 
-#    def check_previous_prediction(self):
-
-#    def remove_predicted_error(self):
-
-#    def create_new_prediction(self):
 
 if __name__ == '__main__':
     try:
