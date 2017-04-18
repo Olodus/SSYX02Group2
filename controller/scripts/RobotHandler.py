@@ -221,12 +221,12 @@ class Robot(object):
 		rotSpeed = -math.fabs(self.angle_to_point)*(2.0/math.pi)
 
 	if math.fabs(self.angle_to_point)>1.0*math.pi/180:
-        self.twist.angular.z = rotSpeed
-        self.twist.linear.x = 0.1
-        return False
-    else:
-        self.twist.angular.z = 0.0
-        return True
+            self.twist.angular.z = rotSpeed
+            self.twist.linear.x = 0.1
+            return False
+        else:
+            self.twist.angular.z = 0.0
+            return True
 
     def do_set_speed(self):
         self.twist.linear.x = self.desired_speed
