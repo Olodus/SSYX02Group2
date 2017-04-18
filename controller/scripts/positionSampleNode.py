@@ -9,14 +9,14 @@ from robotclient.msg import Floats
 from robotclient.srv import *
 
 
-def save_coordinates(n):
+def save_coordinates(n,rid):
     """
     :return: if not end node, measures position with UWB-radios and returns it. If end, returns current position.
     """
     print "first"
     rospy.init_node('position_sample_node')
     print "second"
-    srv = 'get_coord' + str(0)
+    srv = 'get_coord' + str(rid)
     print 'third'
     rospy.wait_for_service(srv)
     print 'fourth'
@@ -78,8 +78,8 @@ if __name__ == "__main__":
     print "yesterday..."
     try:
         runs = int (sys.argv[1])
-        #filenumber = int(sys.argv[2])
+        robot_id = int(sys.argv[2])
         print("start! Number of iterations: " + str(runs))
-        save_coordinates(runs)
+        save_coordinates(runs,rid)
     except rospy.ROSInterruptException:
         print("WTF???")
