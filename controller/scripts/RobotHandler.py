@@ -175,6 +175,13 @@ class Robot(object):
         self.aim_point = self.go_point
         if not self.small_steer():
             return False
+	elif length >= 0.1:
+	    self.desired_speed = length*0.7
+	    self.do_set_speed()
+	    return False
+	else:
+	    return True
+	'''
         elif length >= 1.0:
             self.desired_speed = 0.5
             self.do_set_speed()
@@ -188,8 +195,15 @@ class Robot(object):
             self.desired_speed = 0.3
             self.do_set_speed()
             return False
-        elif length >= 0.1 or length < 0.1:
+	elif length >= 0.1 or length < 0.1:
             return True
+	'''
+	'''
+	else:
+	    self.desired_speed = length*0.7
+	    self.do_set_speed()
+	    return False
+	'''
 
     def do_follow_path(self):
         if self.path_index == len(self.path.poses):
@@ -222,7 +236,7 @@ class Robot(object):
 
 	if math.fabs(self.angle_to_point)>1.0*math.pi/180:
             self.twist.angular.z = rotSpeed
-            self.twist.linear.x = 0.1
+            #self.twist.linear.x = 0.05
             return False
         else:
             self.twist.angular.z = 0.0
