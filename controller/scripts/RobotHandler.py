@@ -210,17 +210,17 @@ class Robot(object):
         quart = (self.state.pose.pose.orientation.x, self.state.pose.pose.orientation.y, self.state.pose.pose.orientation.z, self.state.pose.pose.orientation.w)
         euler = tf.transformations.euler_from_quaternion(quart)
         robot_angle = euler[2]
-	self.angle_to_point = robot_angle - angle
-	if self.angle_to_point > math.pi:
-		self.angle_to_point = self.angle_to_point-2*math.pi
-	if self.angle_to_point < -math.pi:
-		self.angle_to_point = self.angle_to_point+2*math.pi
-	if self.angle_to_point < 0:
-		rotSpeed = math.fabs(self.angle_to_point)*(2.0/math.pi)
-	if self.angle_to_point > 0:
-		rotSpeed = -math.fabs(self.angle_to_point)*(2.0/math.pi)
+        self.angle_to_point = robot_angle - angle
+        if self.angle_to_point > math.pi:
+            self.angle_to_point = self.angle_to_point-2*math.pi
+        if self.angle_to_point < -math.pi:
+            self.angle_to_point = self.angle_to_point+2*math.pi
+        if self.angle_to_point < 0:
+            rotSpeed = math.fabs(self.angle_to_point)*(2.0/math.pi)
+        if self.angle_to_point > 0:
+            rotSpeed = -math.fabs(self.angle_to_point)*(2.0/math.pi)
 
-	if math.fabs(self.angle_to_point)>1.0*math.pi/180:
+        if math.fabs(self.angle_to_point)>1.0*math.pi/180:
             self.twist.angular.z = rotSpeed
             self.twist.linear.x = 0.1
             return False
@@ -247,7 +247,7 @@ class Robot(object):
         return math.fabs(self.twist.angular.z) < math.pi/12
 
     def parameter_acc(self):
-	########what is a good value here?
+    ########what is a good value here?
         if math.fabs(self.last_acc-self.acc)>0.00000001:
             if self.acc > 0:
                 para = {'trans_accel':math.fabs(self.acc),'trans_decel':math.fabs(self.acc)}
@@ -267,16 +267,16 @@ class Robot(object):
                 self.desired_speed = 0.0
                 self.do_set_speed()
         self.last_acc = self.acc
-	'''
-	timeNow = rospy.get_time()
-	timePassed1 = timeNow-self.startTime
-	if timePassed1-self.timePassed2 >= 3.0:
-		print "current position of robot"+str(self.id_nbr)+" is: x="+str(self.state.pose.pose.position.x)+", y="+str(self.state.pose.pose.position.y)
-		print "current velocity of robot"+str(self.id_nbr)+" is: "+str(self.state.twist.twist.linear.x)
-		timeNow = rospy.get_time()
-		print "time passed: "+str(timePassed1)
-		self.timePassed2 = timeNow-self.startTime
-	'''
+    '''
+    timeNow = rospy.get_time()
+    timePassed1 = timeNow-self.startTime
+    if timePassed1-self.timePassed2 >= 3.0:
+        print "current position of robot"+str(self.id_nbr)+" is: x="+str(self.state.pose.pose.position.x)+", y="+str(self.state.pose.pose.position.y)
+        print "current velocity of robot"+str(self.id_nbr)+" is: "+str(self.state.twist.twist.linear.x)
+        timeNow = rospy.get_time()
+        print "time passed: "+str(timePassed1)
+        self.timePassed2 = timeNow-self.startTime
+    '''
 
     def emulate_acc(self):
         #TODO Create acc implementation that handles accual time not just 0.1 sec
@@ -291,8 +291,8 @@ class Robot(object):
         self.pub = rospy.Publisher("RosAria"+str(id_nbr)+"/cmd_vel", Twist, queue_size=1)
         self.sub = rospy.Subscriber("Filter"+str(id_nbr)+"/state", Odometry, self.update_state)
         self.twist = Twist()
-	self.startTime = rospy.get_time()
-	self.timePassed2 = 0.0
+        self.startTime = rospy.get_time()
+        self.timePassed2 = 0.0
 
         # State
         self.state = Odometry()
