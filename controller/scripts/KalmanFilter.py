@@ -19,9 +19,14 @@ class KalmanFilter(object):
         self.kf = Kalman()
         self.state_out = Odometry()
         self.state = np.array([[0],[0],[0],[0],[0],[0]])
+        self.startTime = rospy.get_time()
+        self.oldTime = 0.0
 
     def new_measurement(self, data):
-        self.state = Kalman.update(self.kf,self.state, data.twist.twist.linear.x,data.twist.twist.angular.z,0.1, [data.pose.pose.position.x, data.pose.pose.position.y])
+        self.startTime = rospy.get_time()
+        timestep = self.startTime - self.oldTime
+        self.oldTime = self.startTime
+        self.state = Kalman.update(self.kf,self.state, data.twist.twist.linear.x,data.twist.twist.angular.z,timestep, [data.pose.pose.position.x, data.pose.pose.position.y])
         self.state_out.pose.pose.position.x = self.state[0]
         self.state_out.pose.pose.position.y = self.state[2]
         self.state_out.twist.twist.linear.x = math.sqrt(self.state[1]**2+self.state[3]**2)
