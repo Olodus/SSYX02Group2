@@ -49,8 +49,10 @@ if __name__ == '__main__':
             for i in range(0,nbr_of_robots):
                 print "Robot " + str(i) + " x: " + str(rds[i].sensor_data_x)
                 print "Robot " + str(i) + " y: " + str(rds[i].sensor_data_y)
-                plt.plot(rds[i].sensor_data_x[len(rds[i].sensor_data_x)],rds[i].sensor_data_y[len(rds[i].sensor_data_y)],c="r")
-                plt.plot(rds[i].filter_data_x[len(rds[i].filter_data_x)],rds[i].filter_data_y[len(rds[i].filter_data_y)],c="g")
+                sensor_min_length = min(np.size(rds[i].sensor_data_x),np.size(rds[i].sensor_data_y))
+                filter_min_length = min(np.size(rds[i].filter_data_x),np.size(rds[i].filter_data_y))
+                plt.plot(rds[i].sensor_data_x[:sensor_min_length],rds[i].sensor_data_y[:sensor_min_length],c="r")
+                plt.plot(rds[i].filter_data_x[:filter_min_length],rds[i].filter_data_y[:filter_min_length],c="g")
             plt.pause(0.1)
             plt.savefig("Path.png")
 
