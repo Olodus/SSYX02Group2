@@ -32,8 +32,8 @@ class PoseHandler(object):
 if __name__ == '__main__':
     try:
         rospy.init_node('Sensor')
-        p0 = PoseHandler(int(sys.argv[1]), 0.0, 0.0, float(sys.argv[2]))
-        p1 = PoseHandler(int(sys.argv[1]), 0.0, -1.0, float(sys.argv[2]))
+        p0 = PoseHandler(0, 0.0, 0.0, float(sys.argv[1]))
+        p1 = PoseHandler(1, 0.0, -1.0, float(sys.argv[1]))
 
         print "PoseHandler setup done."
 
