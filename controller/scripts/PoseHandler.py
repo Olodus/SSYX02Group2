@@ -9,14 +9,14 @@ import math
 class PoseHandler(object):
 
     def __init__(self, robot_id, offsetX, offsetY, noice):
-        rospy.init_node('Sensor'+str(robot_id))
         self.offsetX = offsetX
         self.offsetY = offsetY
-        self.pub = rospy.Publisher("Sensor"+str(robot_id)+"/measurement", Odometry, queue_size=1)
-        self.sub = rospy.Subscriber("RosAria"+str(robot_id)+"/pose", Odometry, self.measure)
+        self.pub = rospy.Publisher("Sensor/measurement"+str(robot_id), Odometry, queue_size=1)
+        self.sub = rospy.Subscriber("RosAria"+str(robot_id)+"/pose", Odometry, self.update)
         self.noice = noice
+        self.state = Odometry()
 
-    def measure(self, data):
+    def update(self, data):
         n_x = 0.0
         n_y = 0.0
         if math.fabs(self.noice) > 0.0001:
@@ -24,16 +24,24 @@ class PoseHandler(object):
             n_y = random.uniform(-self.noice,self.noice)
         data.pose.pose.position.x = data.pose.pose.position.x + self.offsetX + n_x
         data.pose.pose.position.y = data.pose.pose.position.y + self.offsetY + n_y
-        self.pub.publish(data)
+        self.state = data
+
+    def measure(self):
+        self.pub.publish(self.state)
 
 if __name__ == '__main__':
     try:
-        if int(sys.argv[1])==0:
-            PoseHandler(int(sys.argv[1]),0.0,0.0,float(sys.argv[2]))
-        else:
-            PoseHandler(int(sys.argv[1]),0.0,-1.0,float(sys.argv[2]))
+        rospy.init_node('Sensor')
+        p0 = PoseHandler(int(sys.argv[1]), 0.0, 0.0, float(sys.argv[2]))
+        p1 = PoseHandler(int(sys.argv[1]), 0.0, -1.0, float(sys.argv[2]))
+
         print "PoseHandler setup done."
-        rospy.spin()
+
+        while True:
+            p0.measure()
+            rospy.sleep(0.05)
+            p1.measure()
+            rospy.sleep(0.05)
 
     except rospy.ROSInterruptException:
         pass
