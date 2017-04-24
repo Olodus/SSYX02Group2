@@ -18,7 +18,6 @@ This is a Handler which takes the position from UWB and the angle from Pose
 class UWBPoseHandler(object):
 
     def __init__(self, robot_id):
-        #rospy.init_node('Sensor'+str(robot_id))
         srv = 'get_coord' + str(robot_id)
         rospy.wait_for_service(srv)
         self.get_coords = rospy.ServiceProxy(srv, GetCoord)
@@ -40,17 +39,18 @@ class UWBPoseHandler(object):
         # The rest is taken from UWB   as of now takes a mean of 10 measurements
         try:
             f = Floats()
-            f = self.get_coords(1)
-            # transform to Odometry
-            x = f.data.data[0]
-            y = f.data.data[1]
+            tmp_pos = []
+            while np.size(tmp_pos) != 2:
+                f = self.get_coords(1)
+                tmp_pos = f.data.data
+                x = tmp_pos[0]
+                y = tmp_pos[1]
             self.measurement.pose.pose.position.x = x
             self.measurement.pose.pose.position.y = y
         except rospy.ServiceException:
             print "GetCoord service not responding"
 
-        if self.covariance_sent:
-            self.pub.publish(self.measurement)
+        self.pub.publish(self.measurement)
 
     def measure_cov(self):
         n = 100
@@ -62,9 +62,10 @@ class UWBPoseHandler(object):
             tmp_pos = np.array([], dtype=np.float32)
             try:
                 f = Floats()
-                f = self.get_coords(1)
-                tmp_pos = f.data.data
-                if np.size(tmp_pos) != 3:
+                tmp_pos = []
+                while np.size(tmp_pos) != 2:
+                    f = self.get_coords(1)
+                    tmp_pos = f.data.data
                     xarr = np.append(xarr, tmp_pos[0])
                     yarr = np.append(yarr, tmp_pos[1])
                     i += 1
@@ -92,12 +93,12 @@ if __name__ == '__main__':
         u0.covariance_sent = True
         u1.covariance_sent = True
 	print "Sensor setup done"
-	#rospy.spin()
 
         while True:
             u0.measure()
+            rospy.sleep(0.05)
             u1.measure()
-            rospy.sleep(0.1)
+            rospy.sleep(0.05)
 
 
     except rospy.ROSInterruptException:
