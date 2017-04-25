@@ -46,28 +46,35 @@ if __name__ == '__main__':
             rd = RobotData(i)
             rds.append(rd)
 
-
-        plt.axis([-10, 10, -10, 10])
+	#plt.axis([-10, 10, -10, 10])
         plt.ion()
 
         print "Logger setup done"
 
         while True:
-            rospy.sleep(5.0)
+            rospy.sleep(10.0)
             for i in range(0,nbr_of_robots):
                 #print "Robot " + str(i) + " x: " + str(rds[i].sensor_data_x)
                 #print "Robot " + str(i) + " y: " + str(rds[i].sensor_data_y)
                 sensor_min_length = min(np.size(rds[i].sensor_data_x),np.size(rds[i].sensor_data_y))
                 filter_min_length = min(np.size(rds[i].filter_data_x),np.size(rds[i].filter_data_y))
 		filter_min_length = min(filter_min_length,np.size(rds[i].filter_data_theta))
-                plt.plot(rds[i].sensor_data_x[:sensor_min_length],rds[i].sensor_data_y[:sensor_min_length],c="r")
-                plt.plot(rds[i].filter_data_x[:filter_min_length],rds[i].filter_data_y[:filter_min_length],c="g")
-		print str(rds[i].filter_data_theta[filter_min_length-1])
+		plt.axis([0, filter_min_length+10, -4, 4])
+		t_filter = range(0,filter_min_length)
+		t_sensor = range(0,filter_min_length)
+                #plt.plot(rds[i].sensor_data_x[:sensor_min_length],rds[i].sensor_data_y[:sensor_min_length],c="r")
+                #plt.plot(rds[i].filter_data_x[:filter_min_length],rds[i].filter_data_y[:filter_min_length],c="g")
+		plt.plot(t_sensor,rds[i].sensor_data_x[:sensor_min_length],c="r")
+		plt.plot(t_sensor,rds[i].sensor_data_y[:sensor_min_length],c="r")
+		plt.plot(t_filter,rds[i].filter_data_x[:filter_min_length],c="g")
+		plt.plot(t_filter,rds[i].filter_data_y[:filter_min_length],c="g")
+		#print str(rds[i].filter_data_theta)
 		#endX = 0.5*math.cos(math.radians(rds[i].filter_data_theta[filter_min_length-1]))
 		#endY = 0.5*math.sin(math.radians(rds[i].filter_data_theta[filter_min_length-1]))
 		#x = rds[i].filter_data_x[filter_min_length-1]
 		#y = rds[i].filter_data_y[filter_min_length-1]
-		#plt.plot([x,x+endX],[y,y+endY],color="b")
+		#f, plt.subplot()
+		plt.plot(t_filter,rds[i].filter_data_theta[:filter_min_length],c="y")
             plt.pause(0.1)
             plt.savefig("Path.png")
 
