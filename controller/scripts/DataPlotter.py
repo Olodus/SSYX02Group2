@@ -59,7 +59,10 @@ if __name__ == '__main__':
                 sensor_min_length = min(np.size(rds[i].sensor_data_x),np.size(rds[i].sensor_data_y))
                 filter_min_length = min(np.size(rds[i].filter_data_x),np.size(rds[i].filter_data_y))
 		filter_min_length = min(filter_min_length,np.size(rds[i].filter_data_theta))
-		plt.axis([0, filter_min_length+10, -4, 4])
+		if filter_min_length < 1000:
+		    plt.axis([0, filter_min_length+10, -4, 4])
+		else:
+		    plt.axis([0, 1000, -4, 4])
 		t_filter = range(0,filter_min_length)
 		t_sensor = range(0,filter_min_length)
                 #plt.plot(rds[i].sensor_data_x[:sensor_min_length],rds[i].sensor_data_y[:sensor_min_length],c="r")
