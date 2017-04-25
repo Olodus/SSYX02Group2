@@ -234,7 +234,7 @@ class Robot(object):
         if self.angle_to_point > 0:
             rotSpeed = -math.fabs(self.angle_to_point)*(2.0/math.pi)
 
-        if math.fabs(self.angle_to_point)>1.0*math.pi/180:
+        if math.fabs(self.angle_to_point)>0.5*math.pi/180:
             self.twist.angular.z = rotSpeed
             #self.twist.linear.x = 0.05
             return False
@@ -258,7 +258,16 @@ class Robot(object):
 
     def small_steer(self):
         self.do_aim_at_point()
-        return math.fabs(self.twist.angular.z) < math.pi/12
+	x = self.state.pose.pose.position.x
+        y = self.state.pose.pose.position.y
+        pointx = self.aim_point.x
+        pointy = self.aim_point.y
+        angle = math.atan2(pointy-y,pointx-x)
+	quart = (self.state.pose.pose.orientation.x, self.state.pose.pose.orientation.y, self.state.pose.pose.orientation.z, self.state.pose.pose.orientation.w)
+        euler = tf.transformations.euler_from_quaternion(quart)
+        robot_angle = euler[2]
+        angle2point = robot_angle - angle
+        return math.fabs(angle2point) < math.pi/12
 
     def parameter_acc(self):
     ########what is a good value here?
