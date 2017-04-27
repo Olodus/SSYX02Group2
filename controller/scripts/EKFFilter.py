@@ -9,7 +9,7 @@ class EKFFilter(object):
         rospy.init_node('Filter'+str(robot_id))
 
         self.pub = rospy.Publisher("Filter"+str(robot_id)+"/state", Odometry, queue_size=1)
-        self.ekf_sub = rospy.Subscriber("robot_pose_ekf/odom_combined", Odometry, self.ekf_update)
+        self.ekf_sub = rospy.Subscriber("robot_pose_ekf"+str(robot_id)+"/odom_combined", Odometry, self.ekf_update)
         self.pose_sub = rospy.Subscriber("RosAria"+str(robot_id)+"/pose", Odometry, self.new_speed)
         self.pose_state = Odometry()
 

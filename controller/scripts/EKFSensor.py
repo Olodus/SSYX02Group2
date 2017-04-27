@@ -23,8 +23,8 @@ class EKFHandler(object):
         rospy.wait_for_service(srv)
         self.get_coords = rospy.ServiceProxy(srv, GetCoord)
         self.measurement = Odometry()
-        self.pose_pub = rospy.Publisher("robot_pose_ekf/odom", Odometry, queue_size=1)
-        self.uwb_pub = rospy.Publisher("robot_pose_ekf/vo", Odometry, queue_size=1)
+        self.pose_pub = rospy.Publisher("robot_pose_ekf"+str(robot_id)+"/odom", Odometry, queue_size=1)
+        self.uwb_pub = rospy.Publisher("robot_pose_ekf"+str(robot_id)+"/vo", Odometry, queue_size=1)
         self.sub = rospy.Subscriber("RosAria"+str(robot_id)+"/pose", Odometry, self.update)
         self.covariance_measured = False
 
