@@ -93,21 +93,17 @@ class EKFHandler(object):
 
 if __name__ == '__main__':
     try:
+        nbr_of_robots = int(sys.argv[1])
         rospy.init_node('Sensor')
+        rs = []
+        for i in range(0, nbr_of_robots):
+            r = EKFHandler(i)
+            r.measure_cov()
+            r.covariance_measured = True
+            rs.append(r)
 
-        e0 = EKFHandler(0)
-        e1 = EKFHandler(1)
-        e0.measure_cov()
-        e1.measure_cov()
-        e0.covariance_measured = True
-        e1.covariance_measured = True
         print "Sensor setup done"
-
-        while True:
-            e0.measure()
-            rospy.sleep(0.05)
-            e1.measure()
-            rospy.sleep(0.05)
+        rospy.spin()
 
 
     except rospy.ROSInterruptException:
