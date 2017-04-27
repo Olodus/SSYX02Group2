@@ -43,8 +43,8 @@ class Kalman(object):
         '''
 
         self.q = np.array([[self.std_dev_x**2, 0, 0],
-                      [0, self.std_dev_x**2, 0],
-                      [0, 0, self.std_dev_z**2]])
+                      [0, self.std_dev_z**2, 0],
+                      [0, 0, 0]])
 
         p = np.dot(np.dot(f, self.p), f.T) + self.q
         return p
@@ -83,13 +83,13 @@ class Kalman(object):
         '''
         z_k = np.array([[measured[0]],
                         [measured[1]],
-                        [np.arctan((x_k_k1[1,0]-y_pos)/(x_k_k1[0,0]-x_pos))]])
+                        [0]])
 
                         # measured state
 
         h = np.array([[1, 0, 0],
                       [0, 1, 0],
-                      [0, 0, 1]])
+                      [0, 0, 0]])
                       # observation matrix
 
         y_k = z_k - np.dot(h, x_k_k1)
