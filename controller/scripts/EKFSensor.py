@@ -27,37 +27,40 @@ class EKFHandler(object):
         self.uwb_pub = rospy.Publisher("robot_pose_ekf"+str(robot_id)+"/vo", Odometry, queue_size=1)
         self.sub = rospy.Subscriber("RosAria"+str(robot_id)+"/pose", Odometry, self.update)
         self.covariance_measured = False
+        self.cov = 0.0
+        self.covx = 0.0
+        self.covy = 0.0
 
     def update(self,data):
         if self.covariance_measured:
             self.pose_pub.publish(data)
 
-        try:
-            f = Floats()
-            tmp_pos = []
-            while np.size(tmp_pos) != 2:
-                f = self.get_coords(1)
-                tmp_pos = f.data.data
-                x = tmp_pos[0]
-                y = tmp_pos[1]
-            self.measurement.pose.pose.position.x = x
-            self.measurement.pose.pose.position.y = y
-            self.measurement.pose.pose.position.z = 0
-            self.measurement.pose.pose.orientation.x = 1
-            self.measurement.pose.pose.orientation.y = 0
-            self.measurement.pose.pose.orientation.z = 0
-            self.measurement.pose.pose.orientation.w = 0
-        except rospy.ServiceException:
-            print "GetCoord service not responding"
+            try:
+                f = Floats()
+                tmp_pos = []
+                while np.size(tmp_pos) != 2:
+                    f = self.get_coords(1)
+                    tmp_pos = f.data.data
+                    x = tmp_pos[0]
+                    y = tmp_pos[1]
+                self.measurement.pose.pose.position.x = x
+                self.measurement.pose.pose.position.y = y
+                self.measurement.pose.pose.position.z = 0
+                self.measurement.pose.pose.orientation.x = 1
+                self.measurement.pose.pose.orientation.y = 0
+                self.measurement.pose.pose.orientation.z = 0
+                self.measurement.pose.pose.orientation.w = 0
+            except rospy.ServiceException:
+                print "GetCoord service not responding"
 
-        self.measurement.pose.covariance = {self.covx, 0, 0, 0, 0, 0,
-                                            0, self.covy, 0, 0, 0, 0,
-                                            0, 0, 99999, 0, 0, 0,
-                                            0, 0, 0, 99999, 0, 0,
-                                            0, 0, 0, 0, 99999, 0,
-                                            0, 0, 0, 0, 0, 99999}
+            self.measurement.pose.covariance = {self.covx, 0, 0, 0, 0, 0,
+                                                0, self.covy, 0, 0, 0, 0,
+                                                0, 0, 99999, 0, 0, 0,
+                                                0, 0, 0, 99999, 0, 0,
+                                                0, 0, 0, 0, 99999, 0,
+                                                0, 0, 0, 0, 0, 99999}
 
-        if self.covariance_measured:
+
             self.uwb_pub.publish(self.measurement)
 
     def measure_cov(self):
