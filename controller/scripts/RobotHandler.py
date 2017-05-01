@@ -43,9 +43,9 @@ class Robot(object):
         elif self.mission == 2:
             return self.do_aim_at_point()
         elif self.mission == 3:
-            return self.do_set_speed()
+            return self.do_freemove()
         elif self.mission == 4:
-            self.do_set_acc()
+            return self.do_freemove()
         elif self.mission == 5:
             return self.do_stop()
         elif self.mission == 6:
