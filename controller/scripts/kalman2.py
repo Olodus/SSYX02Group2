@@ -12,7 +12,7 @@ class Kalman(object):
         self.std_meas = 0.0   # Standard deviation for UWB measurements, NOT percentage
         self.std_dev_x = 0.05  # Standard deviation for speed, percentage
         self.std_dev_z = 0.025  # Standard deviation for rotation, percentage
-        self.cov = []
+        self.cov = [0.01, 0.01, 0.01, 0.01]
 #        self.std_meas = 0
 #        self.std_dev_x = 0
 #        self.std_dev_z = 0
