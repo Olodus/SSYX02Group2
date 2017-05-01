@@ -1,0 +1,4 @@
+float32 ang_vel
+---
+bool succeded
+string error_msg
