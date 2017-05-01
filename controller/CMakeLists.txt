@@ -65,6 +65,8 @@ add_message_files(
    SetSpeed.srv
    Stop.srv
    GetCoord.srv
+   SetAngVel.srv
+   SteerTowards.srv
  )
 
 ## Generate actions in the 'action' folder
