@@ -224,6 +224,7 @@ class Robot(object):
             self.is_steering_with_acc = False
             self.desired_speed = 0.0
             self.acc = 0.0
+            self.steer_point = req.point
             self.mission = 6
             msg = "Robot " + str(self.id_nbr) + ": Will steer towards" + str(req.point)
             self.mission_lock.release()
@@ -324,8 +325,8 @@ class Robot(object):
 
         x = self.state.pose.pose.position.x
         y = self.state.pose.pose.position.y
-        pointx = self.go_point.x
-        pointy = self.go_point.y
+        pointx = self.steer_point.x
+        pointy = self.steer_point.y
 
         length = math.sqrt(math.pow(pointx - x, 2) + math.pow(pointy - y, 2))
         return length <= 0.1
