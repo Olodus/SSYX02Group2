@@ -81,6 +81,8 @@ class Robot(object):
         elif self.mission == 6:
             # Steer towards
             self.mission = 5
+        para = {'trans_accel': 1.0, 'trans_decel': 1.0}
+        self.dyn_par.update_configuration(para)
 
     def get_state(self, req):
         return {'state': self.state}
