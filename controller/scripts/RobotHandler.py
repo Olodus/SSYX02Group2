@@ -222,6 +222,8 @@ class Robot(object):
         else:
             self.executing = True
             self.is_steering_with_acc = False
+            self.desired_speed = 0.0
+            self.acc = 0.0
             self.mission = 6
             msg = "Robot " + str(self.id_nbr) + ": Will steer towards" + str(req.point)
             self.mission_lock.release()
