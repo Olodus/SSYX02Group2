@@ -26,12 +26,12 @@ class KalmanFilter(object):
         self.startTime = rospy.get_time()
         timestep = self.startTime - self.oldTime
         self.oldTime = self.startTime
-	print timestep
+        print timestep
         self.state = Kalman.update(self.kf,self.state, data.twist.twist.linear.x,data.twist.twist.angular.z,timestep, [data.pose.pose.position.x, data.pose.pose.position.y])
         self.state_out.pose.pose.position.x = self.state[0]
         self.state_out.pose.pose.position.y = self.state[1]
         self.state_out.twist.twist.linear.x = data.twist.twist.linear.x
-	angle = 1+self.state[2]-1
+        angle = 1+self.state[2]-1
         quat = tf.transformations.quaternion_from_euler(0.0, 0.0, angle)
         self.state_out.pose.pose.orientation.x = quat[0]
         self.state_out.pose.pose.orientation.y = quat[1]

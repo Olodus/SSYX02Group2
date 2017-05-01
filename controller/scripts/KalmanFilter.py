@@ -30,7 +30,7 @@ class KalmanFilter(object):
         self.state_out.pose.pose.position.x = self.state[0]
         self.state_out.pose.pose.position.y = self.state[2]
         self.state_out.twist.twist.linear.x = math.sqrt(self.state[1]**2+self.state[3]**2)
-	angle = 1+self.state[4]-1
+        angle = 1+self.state[4]-1
         quat = tf.transformations.quaternion_from_euler(0.0, 0.0, angle)
         self.state_out.pose.pose.orientation.x = quat[0]
         self.state_out.pose.pose.orientation.y = quat[1]
