@@ -14,6 +14,9 @@ class RobotServices(object):
       self.stop = setup_stop(robot_id)
       self.set_acc = setup_set_acc(robot_id)
       self.get_state = setup_get_state(robot_id)
+      self.set_ang_vel = setup_set_ang_vel(robot_id)
+      self.steer_towards = setup_steer_towards(robot_id)
+
 
 
 def setup_stop(robot_id):
@@ -43,6 +46,14 @@ def setup_set_speed(robot_id):
 def setup_set_acc(robot_id):
   rospy.wait_for_service("Robot"+str(robot_id)+"/set_acc")
   return rospy.ServiceProxy("Robot"+str(robot_id)+"/set_acc",SetAcc)
+
+def setup_set_ang_vel(robot_id):
+  rospy.wait_for_service("Robot" + str(robot_id) + "/set_ang_vel")
+  return rospy.ServiceProxy("Robot" + str(robot_id) + "/set_ang_vel", SetAngVel)
+
+def setup_steer_towards(robot_id):
+  rospy.wait_for_service("Robot" + str(robot_id) + "/steer_towards")
+  return rospy.ServiceProxy("Robot" + str(robot_id) + "/steer_towards", SteerTowards)
 
 def setup_get_state(robot_id):
   rospy.wait_for_service("Robot"+str(robot_id)+"/get_state")
