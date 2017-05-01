@@ -405,6 +405,7 @@ class Robot(object):
         self.acc = 0.0
         self.last_acc = 0.0
         self.steer_point = Point()
+        self.ang_vel = 0.0
         self.is_steering_with_acc = False
         self.is_freemoving_with_acc = False
 
