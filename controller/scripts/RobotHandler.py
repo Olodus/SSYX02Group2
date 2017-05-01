@@ -10,6 +10,7 @@ import math
 import rospy
 import sys
 import dynamic_reconfigure.client
+import threading
 
 
 # Missions
@@ -17,9 +18,10 @@ import dynamic_reconfigure.client
 #   0 : Go to Point
 #   1 : Follow path
 #   2 : Aim at point
-#	3 : Set speed
-#	4 : Set acceleration
+#	3 : Free moving
+#	4 : Set acceleration (not used anymore)
 #	5 : Stop
+#   6 : Steer towards
 
 ####### Do Missions ########
 # All do methods return True if they are done
@@ -46,6 +48,8 @@ class Robot(object):
             self.do_set_acc()
         elif self.mission == 5:
             return self.do_stop()
+        elif self.mission == 6:
+            return self.do_steer_towards()
 
     def publish_twist(self):
         self.pub.publish(self.twist)
@@ -72,6 +76,9 @@ class Robot(object):
             # Stop
             self.executing = False
             self.mission = -1
+        elif self.mission == 6:
+            # Steer towards
+            self.mission = 5
 
     def get_state(self, req):
         return {'state': self.state}
@@ -80,8 +87,10 @@ class Robot(object):
         return {'robot_ready': not self.executing}
 
     def aim_at_point(self, req):
+        self.mission_lock.accuire()
         if self.executing:
             error = "Error: Robot " + str(self.id_nbr) + ": Is already doing something"
+            self.mission_lock.release()
             return {'succeded': False, 'error_msg': error}
         else:
             if self.mission == 4:
@@ -91,11 +100,14 @@ class Robot(object):
             self.mission = 2
             self.aim_point = req.point
             msg = "Robot " + str(self.id_nbr) + ": Will aim itself towards given point"
+            self.mission_lock.release()
             return {'succeded': True, 'error_msg': msg}
 
     def go_to_point(self, req):
+        self.mission_lock.accuire()
         if self.executing:
             error = "Error: Robot " + str(self.id_nbr) + ": Is already doing something"
+            self.mission_lock.release()
             return {'succeded': False, 'error_msg': error}
         else:
             if self.mission == 4:
@@ -105,12 +117,15 @@ class Robot(object):
             self.mission = 0
             self.go_point = req.point
             msg = "Robot " + str(self.id_nbr) + ": Will go to given point"
+            self.mission_lock.release()
             return {'succeded': True, 'error_msg': msg}
 
 
     def follow_path(self, req):
+        self.mission_lock.accuire()
         if self.executing:
             error = "Robot " + str(self.id_nbr) + ": Is already doing something"
+            self.mission_lock.release()
             return {'succeded': False, 'error_msg': error}
         else:
             if self.mission == 4:
@@ -121,45 +136,93 @@ class Robot(object):
             self.path = req.path
             self.path_index = 0
             msg = "Robot " + str(self.id_nbr) + ": Will follow given path"
+            self.mission_lock.release()
             return {'succeded': True, 'error_msg': msg}
 
     def set_speed(self, req):
+        self.mission_lock.accuire()
         if self.executing:
-            error = "Robot " + str(self.id_nbr) + ": Can't set speed since already on a mission (use stop to abort mission)"
-            return {'succeded': False, 'error_msg': error}
+            if self.mission == 6:
+                self.is_steering_with_acc = False
+                self.desired_speed = req.speed
+                msg = "Robot " + str(self.id_nbr) + ": Will set speed to " + str(req.speed)
+                self.mission_lock.release()
+                return {'succeded': True, 'error_msg': msg}
+            else:
+                error = "Robot " + str(self.id_nbr) + ": Can't set speed since already on a mission (use stop to abort mission)"
+                self.mission_lock.release()
+                return {'succeded': False, 'error_msg': error}
         else:
-            if self.mission == 4:
-                para = {'trans_accel': 1.0, 'trans_decel': 1.0}
-                self.dyn_par.update_configuration(para)
-            self.executing = True
-            self.moving = True
+            para = {'trans_accel': 1.0, 'trans_decel': 1.0}
+            self.dyn_par.update_configuration(para)
             self.mission = 3
+            self.is_freemoving_with_acc = False
             self.desired_speed = req.speed
             msg = "Robot " + str(self.id_nbr) + ": Will set speed to " + str(req.speed)
+            self.mission_lock.release()
             return {'succeded': True, 'error_msg': msg}
 
     def stop(self,req):
-        if self.executing or self.moving:
+        para = {'trans_accel': 1.0, 'trans_decel': 1.0}
+        self.dyn_par.update_configuration(para)
+        self.mission_lock.accuire()
+        if self.executing:
             error = "Robot " + str(self.id_nbr) + ": Stopped executing it's mission"
             self.mission = 5
+            self.mission_lock.release()
             return {'succeded': True, 'error_msg': error}
         else:
-            if self.mission == 4:
-                para = {'trans_accel': 1.0, 'trans_decel': 1.0}
-                self.dyn_par.update_configuration(para)
-            msg = "Robot " + str(self.id_nbr) + ": Can't stop since it wasn't executing a mission"
+            msg = "Robot " + str(self.id_nbr) + ": Stopping"
+            self.mission = 5
+            self.mission_lock.release()
             return {'succeded': False, 'error_msg': msg}
 
-
-    def set_acc(self, req):
+    def set_ang_speed(self,req):
+        self.mission_lock.accuire()
         if self.executing:
-            error = "Robot " + str(self.id_nbr) + ": Can't set acc since already on a mission (use stop to abort mission)"
+            error = "Robot " + str(self.id_nbr) + ": Can't set ang vel since already on a mission (use stop to abort mission)"
+            self.mission_lock.release()
             return {'succeded': False, 'error_msg': error}
         else:
-            self.moving = True
-            self.mission = 4
+            self.mission = 3
+            self.ang_vel = req.ang_vel
+            msg = "Robot " + str(self.id_nbr) + ": Will set ang vel to " + str(req.ang_vel)
+            self.mission_lock.release()
+            return {'succeded': True, 'error_msg': msg}
+
+    def set_acc(self, req):
+        self.mission_lock.accuire()
+        if self.executing:
+            if self.mission == 6:
+                self.is_steering_with_acc = True
+                self.acc = req.acc
+                msg = "Robot " + str(self.id_nbr) + ": Will set acc to " + str(req.acc)
+                self.mission_lock.release()
+                return {'succeded': True, 'error_msg': msg}
+            else:
+                error = "Robot " + str(self.id_nbr) + ": Can't set acc since already on a mission (use stop to abort mission)"
+                self.mission_lock.release()
+                return {'succeded': False, 'error_msg': error}
+        else:
+            self.mission = 3
             self.acc = req.acc
+            self.is_freemoving_with_acc = True
             msg = "Robot " + str(self.id_nbr) + ": Will set acc to " + str(req.acc)
+            self.mission_lock.release()
+            return {'succeded': True, 'error_msg': msg}
+
+    def steer_towards(self, req):
+        self.mission_lock.accuire()
+        if self.executing:
+            error = "Robot " + str(self.id_nbr) + ": Can't steer towards since already on a mission (use stop to abort mission)"
+            self.mission_lock.release()
+            return {'succeded': False, 'error_msg': error}
+        else:
+            self.executing = True
+            self.is_steering_with_acc = False
+            self.mission = 6
+            msg = "Robot " + str(self.id_nbr) + ": Will steer towards" + str(req.point)
+            self.mission_lock.release()
             return {'succeded': True, 'error_msg': msg}
 
 
@@ -175,35 +238,13 @@ class Robot(object):
         self.aim_point = self.go_point
         if not self.small_steer():
             return False
-	elif length >= 0.1:
-	    self.desired_speed = length*0.7
-	    self.do_set_speed()
-	    return False
-	else:
-	    return True
-	'''
-        elif length >= 1.0:
-            self.desired_speed = 0.5
+        elif length >= 0.1:
+            self.desired_speed = length*0.7
             self.do_set_speed()
             return False
-        elif length >= 0.5:
-            self.desired_speed = 0.4
-            self.do_set_speed()
-            #small_steer()
-            return False
-        elif length >= 0.25:
-            self.desired_speed = 0.3
-            self.do_set_speed()
-            return False
-	elif length >= 0.1 or length < 0.1:
+        else:
             return True
-	'''
-	'''
-	else:
-	    self.desired_speed = length*0.7
-	    self.do_set_speed()
-	    return False
-	'''
+
 
     def do_follow_path(self):
         if self.path_index == len(self.path.poses):
@@ -246,6 +287,18 @@ class Robot(object):
         self.twist.linear.x = self.desired_speed
         return True#math.fabs(self.state.twist.twist.linear.x - self.desired_speed) <= 0.001
 
+    def do_freemove(self):
+        if self.is_freemoving_with_acc:
+            self.do_set_acc()
+        else:
+            self.do_set_speed()
+        self.do_set_ang_vel()
+        return True
+
+    def do_set_ang_vel(self):
+        self.twist.angular.z = self.ang_vel
+        return True
+
     def do_set_acc(self):
         #self.emulate_acc()
         self.parameter_acc()
@@ -255,15 +308,32 @@ class Robot(object):
         self.twist.angular.z = 0.0
         return math.fabs(self.state.twist.twist.linear.x) <= 0.01 and math.fabs(self.state.twist.twist.angular.z) <= 0.01
 
+    def do_steer_towards(self):
+        self.aim_point = self.steer_point
+        self.do_aim_at_point()
+
+        # Either do set speed or set acc
+        if self.is_steering_with_acc:
+            self.do_set_acc()
+        else:
+            self.do_set_speed()
+
+        x = self.state.pose.pose.position.x
+        y = self.state.pose.pose.position.y
+        pointx = self.go_point.x
+        pointy = self.go_point.y
+
+        length = math.sqrt(math.pow(pointx - x, 2) + math.pow(pointy - y, 2))
+        return length <= 0.1
 
     def small_steer(self):
         self.do_aim_at_point()
-	x = self.state.pose.pose.position.x
+        x = self.state.pose.pose.position.x
         y = self.state.pose.pose.position.y
         pointx = self.aim_point.x
         pointy = self.aim_point.y
         angle = math.atan2(pointy-y,pointx-x)
-	quart = (self.state.pose.pose.orientation.x, self.state.pose.pose.orientation.y, self.state.pose.pose.orientation.z, self.state.pose.pose.orientation.w)
+        quart = (self.state.pose.pose.orientation.x, self.state.pose.pose.orientation.y, self.state.pose.pose.orientation.z, self.state.pose.pose.orientation.w)
         euler = tf.transformations.euler_from_quaternion(quart)
         robot_angle = euler[2]
         angle2point = robot_angle - angle
@@ -320,7 +390,6 @@ class Robot(object):
         # State
         self.state = Odometry()
         self.executing = False
-        self.moving = False
 
         # Mission
         self.mission = -1
@@ -333,6 +402,9 @@ class Robot(object):
         self.desired_speed = 0.0
         self.acc = 0.0
         self.last_acc = 0.0
+        self.steer_point = Point()
+        self.is_steering_with_acc = False
+        self.is_freemoving_with_acc = False
 
         # Constants
         self.cruising_speed = 0.3
@@ -360,11 +432,16 @@ class Robot(object):
         # Creating 'set_acc' service
         g = rospy.Service('Robot'+str(id_nbr)+'/set_acc', SetAcc, self.set_acc)
 
+        # Creating 'steer_towards' service
+        t = rospy.Service('Robot'+str(id_nbr)+'/steer_towards', SteerTowards, self.steer_towards)
+
         # Creating 'get_state' service
         h = rospy.Service('Robot' + str(id_nbr) + '/get_state', GetState, self.get_state)
 
         # Setting up a dynamic_parameter client
         self.dyn_par = dynamic_reconfigure.client.Client("RosAria"+str(self.id_nbr), timeout=10)
+
+        self.mission_lock = threading.Lock()
 
 
 if __name__ == '__main__':
@@ -378,7 +455,6 @@ if __name__ == '__main__':
                 if mission_done:
                     r.end_mission()
             rospy.sleep(0.1)
-        rospy.spin()
 
     except rospy.ROSInterruptException:
         pass
