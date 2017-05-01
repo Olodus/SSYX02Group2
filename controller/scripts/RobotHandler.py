@@ -50,6 +50,8 @@ class Robot(object):
             return self.do_stop()
         elif self.mission == 6:
             return self.do_steer_towards()
+        elif self.mission == 7:
+            return self.do_freemove()
 
     def publish_twist(self):
         self.pub.publish(self.twist)
