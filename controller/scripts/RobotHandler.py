@@ -437,6 +437,9 @@ class Robot(object):
         # Creating 'steer_towards' service
         t = rospy.Service('Robot'+str(id_nbr)+'/steer_towards', SteerTowards, self.steer_towards)
 
+        # Creating 'set_ang_vel' service
+        t = rospy.Service('Robot' + str(id_nbr) + '/set_ang_vel', SetAngVel, self.set_ang_speed)
+
         # Creating 'get_state' service
         h = rospy.Service('Robot' + str(id_nbr) + '/get_state', GetState, self.get_state)
 
