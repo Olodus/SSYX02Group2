@@ -87,7 +87,7 @@ class Robot(object):
         return {'robot_ready': not self.executing}
 
     def aim_at_point(self, req):
-        self.mission_lock.accuire()
+        self.mission_lock.acquire()
         if self.executing:
             error = "Error: Robot " + str(self.id_nbr) + ": Is already doing something"
             self.mission_lock.release()
@@ -104,7 +104,7 @@ class Robot(object):
             return {'succeded': True, 'error_msg': msg}
 
     def go_to_point(self, req):
-        self.mission_lock.accuire()
+        self.mission_lock.acquire()
         if self.executing:
             error = "Error: Robot " + str(self.id_nbr) + ": Is already doing something"
             self.mission_lock.release()
@@ -122,7 +122,7 @@ class Robot(object):
 
 
     def follow_path(self, req):
-        self.mission_lock.accuire()
+        self.mission_lock.acquire()
         if self.executing:
             error = "Robot " + str(self.id_nbr) + ": Is already doing something"
             self.mission_lock.release()
@@ -140,7 +140,7 @@ class Robot(object):
             return {'succeded': True, 'error_msg': msg}
 
     def set_speed(self, req):
-        self.mission_lock.accuire()
+        self.mission_lock.acquire()
         if self.executing:
             if self.mission == 6:
                 self.is_steering_with_acc = False
@@ -165,7 +165,7 @@ class Robot(object):
     def stop(self,req):
         para = {'trans_accel': 1.0, 'trans_decel': 1.0}
         self.dyn_par.update_configuration(para)
-        self.mission_lock.accuire()
+        self.mission_lock.acquire()
         if self.executing:
             error = "Robot " + str(self.id_nbr) + ": Stopped executing it's mission"
             self.mission = 5
@@ -178,7 +178,7 @@ class Robot(object):
             return {'succeded': False, 'error_msg': msg}
 
     def set_ang_speed(self,req):
-        self.mission_lock.accuire()
+        self.mission_lock.acquire()
         if self.executing:
             error = "Robot " + str(self.id_nbr) + ": Can't set ang vel since already on a mission (use stop to abort mission)"
             self.mission_lock.release()
@@ -191,7 +191,7 @@ class Robot(object):
             return {'succeded': True, 'error_msg': msg}
 
     def set_acc(self, req):
-        self.mission_lock.accuire()
+        self.mission_lock.acquire()
         if self.executing:
             if self.mission == 6:
                 self.is_steering_with_acc = True
@@ -212,7 +212,7 @@ class Robot(object):
             return {'succeded': True, 'error_msg': msg}
 
     def steer_towards(self, req):
-        self.mission_lock.accuire()
+        self.mission_lock.acquire()
         if self.executing:
             error = "Robot " + str(self.id_nbr) + ": Can't steer towards since already on a mission (use stop to abort mission)"
             self.mission_lock.release()
