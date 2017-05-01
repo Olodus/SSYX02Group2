@@ -9,9 +9,10 @@ class Kalman(object):
 #        self.p = 0*np.eye(6) # P- the error covariance matrix
         self.q = np.zeros((3, 3))   # Q- convariance matrix
 
-        self.std_meas = 0.05   # Standard deviation for UWB measurements, NOT percentage
+        self.std_meas = 0.0   # Standard deviation for UWB measurements, NOT percentage
         self.std_dev_x = 0.05  # Standard deviation for speed, percentage
         self.std_dev_z = 0.025  # Standard deviation for rotation, percentage
+        self.cov = []
 #        self.std_meas = 0
 #        self.std_dev_x = 0
 #        self.std_dev_z = 0
@@ -100,9 +101,9 @@ class Kalman(object):
         '''
 
 
-        r = self.std_meas**2*np.array([[1, 0, 0],
-                                       [0, 1, 0],
-                                       [0, 0, 1]])
+        r = np.array([[self.cov[0], self.cov[1], 0],
+                      [self.cov[2], self.cov[3], 0],
+                      [0, 0, self.std_meas]])
 
 
         s = np.add(np.dot(np.dot(h, p_k_k1), h.T), r)

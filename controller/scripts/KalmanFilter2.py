@@ -16,6 +16,7 @@ class KalmanFilter(object):
 
         self.pub = rospy.Publisher("Filter"+str(robot_id)+"/state", Odometry, queue_size=1)
         self.sub = rospy.Subscriber("Sensor/measurement"+str(robot_id), Odometry, self.new_measurement)
+        self.subcov = rospy.Subscriber("Sensor/covariance", float64[4], self.new_cov)
         self.kf = Kalman()
         self.state_out = Odometry()
         self.state = np.array([[0],[0],[0]])
@@ -41,6 +42,9 @@ class KalmanFilter(object):
         #print str(self.state)
 
         self.pub.publish(self.state_out)
+
+    def new_cov(self,data):
+        Kalman.cov = data
 
 
 if __name__ == '__main__':
