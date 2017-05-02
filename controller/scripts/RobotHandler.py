@@ -274,24 +274,29 @@ class Robot(object):
         robot_angle = euler[2]
         self.angle_to_point = robot_angle - angle
 
+	'''
 	if math.fabs(self.angle_to_point) - math.fabs(self.old_angle) < 0.000001 and self.mission == 6 and math.fabs(self.angle_to_point) > 1.0*math.pi/180:
 		self.P_ang_val = self.P_ang_val + 0.01
 		#print "P-regulator value increased since robot stayed on same angle, new value is: "+str(self.P_ang_val)
+	'''
 
         if self.angle_to_point > math.pi:
             self.angle_to_point = self.angle_to_point-2*math.pi
         if self.angle_to_point < -math.pi:
             self.angle_to_point = self.angle_to_point+2*math.pi
         if self.angle_to_point < 0:
-            rotSpeed = math.fabs(self.angle_to_point)*self.P_ang_val
+            rotSpeed = self.P_ang_val
         if self.angle_to_point > 0:
-            rotSpeed = -math.fabs(self.angle_to_point)*self.P_ang_val
+            rotSpeed = -self.P_ang_val
 
 	self.old_angle = self.angle_to_point
 	
 
         if math.fabs(self.angle_to_point)>1.0*math.pi/180:
-            self.twist.angular.z = rotSpeed
+	    if math.fabs(self.angle_to_point) > 30*math.pi/180:
+		self.twist.angular.z = (rotSpeed/math.fabs(rotSpeed))*1.0
+	    else:
+            	self.twist.angular.z = (rotSpeed/math.fabs(rotSpeed))*0.2
             #self.twist.linear.x = 0.05
             return False
         else:
@@ -339,9 +344,11 @@ class Robot(object):
         pointy = self.steer_point.y
 
         length = math.sqrt(math.pow(pointx - x, 2) + math.pow(pointy - y, 2))
-	if length <= 0.1:
+	'''
+	if length <= 0.2:
 		self.P_ang_val = 3.5/math.pi
-        return length <= 0.1
+        '''
+	return length <= 0.2
 
     def small_steer(self):
         self.do_aim_at_point()

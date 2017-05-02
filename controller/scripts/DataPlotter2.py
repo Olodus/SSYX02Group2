@@ -79,7 +79,7 @@ if __name__ == '__main__':
 		#if filter_min_length < 1000:
 		#    plt.axis([0, filter_min_length+10, -4, 4])
 		#else:
-		plt.axis([-1.5, 1.0, -0.5, 1.5])
+		plt.axis([-6.0, 2.0, -6.0, 2.0])
 		plt.xlabel('x [m]')
 		plt.ylabel('y [m]')
 
@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
 		blue_dot = plt.plot(rds[i].prediction_data_x[:prediction_min_length],rds[i].prediction_data_y[:prediction_min_length],'bo', markersize = 5, marker = 'o', label="Predicted state")
 		if not legendAdded:
-		    plt.legend()
+		    #plt.legend()
 		    legendAdded = True
 
 		#plt.legend(handles = [red_dot, blue_dot, green_dot])

@@ -28,7 +28,7 @@ class KalmanFilter(object):
         self.startTime = rospy.get_time()
         timestep = self.startTime - self.oldTime
         self.oldTime = self.startTime
-        print timestep
+        #print timestep
         self.state = Kalman.update(self.kf,self.state, data.twist.twist.linear.x,data.twist.twist.angular.z,timestep, [data.pose.pose.position.x, data.pose.pose.position.y])
         self.state_out.pose.pose.position.x = self.state[0]
         self.state_out.pose.pose.position.y = self.state[1]
