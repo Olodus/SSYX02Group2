@@ -94,9 +94,9 @@ if __name__ == '__main__':
         #u = UWBPoseHandler(int(sys.argv[1]))
         u0 = UWBPoseHandler(0)
         u1 = UWBPoseHandler(1)
-        c = u.measure_cov()
+        c = u0.measure_cov()
         #Send Covariance
-        pub0 = rospy.Publisher("Sensor/covariance", float64[4],queue_size=1)
+        pub0 = rospy.Publisher("Sensor/covariance", Floats,queue_size=1)
         pub0.publish(c)
         u0.covariance_sent = True
         u1.covariance_sent = True

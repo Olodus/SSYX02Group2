@@ -8,6 +8,7 @@ from kalman2 import Kalman
 import math
 import tf
 import numpy as np
+from robotclient.msg import Floats
 
 class KalmanFilter(object):
     def __init__(self, robot_id):
@@ -16,7 +17,7 @@ class KalmanFilter(object):
 
         self.pub = rospy.Publisher("Filter"+str(robot_id)+"/state", Odometry, queue_size=1)
         self.sub = rospy.Subscriber("Sensor/measurement"+str(robot_id), Odometry, self.new_measurement)
-        self.subcov = rospy.Subscriber("Sensor/covariance", float64[4], self.new_cov)
+        self.subcov = rospy.Subscriber("Sensor/covariance", Floats, self.new_cov)
         self.kf = Kalman()
         self.state_out = Odometry()
         self.state = np.array([[0],[0],[0]])
