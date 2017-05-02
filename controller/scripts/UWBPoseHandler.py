@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from nav_msgs.msg import Odometry
+from std_msgs.msg import *
 import sys
 import rospy
 import csv
