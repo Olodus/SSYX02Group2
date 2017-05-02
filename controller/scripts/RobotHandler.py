@@ -245,8 +245,8 @@ class Robot(object):
         self.aim_point = self.go_point
         if not self.small_steer():
             return False
-        elif length >= 0.1:
-            self.desired_speed = length*0.7
+        elif length >= 0.2:
+            self.desired_speed = length*0.5
             self.do_set_speed()
             return False
         else:
@@ -278,11 +278,11 @@ class Robot(object):
         if self.angle_to_point < -math.pi:
             self.angle_to_point = self.angle_to_point+2*math.pi
         if self.angle_to_point < 0:
-            rotSpeed = math.fabs(self.angle_to_point)*(2.0/math.pi)
+            rotSpeed = math.fabs(self.angle_to_point)*(3.5/math.pi)
         if self.angle_to_point > 0:
-            rotSpeed = -math.fabs(self.angle_to_point)*(2.0/math.pi)
+            rotSpeed = -math.fabs(self.angle_to_point)*(3.5/math.pi)
 
-        if math.fabs(self.angle_to_point)>0.5*math.pi/180:
+        if math.fabs(self.angle_to_point)>1.0*math.pi/180:
             self.twist.angular.z = rotSpeed
             #self.twist.linear.x = 0.05
             return False
