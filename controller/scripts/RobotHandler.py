@@ -226,7 +226,10 @@ class Robot(object):
             self.is_steering_with_acc = False
             self.desired_speed = 0.0
             self.acc = 0.0
-            self.steer_point = req.point
+            self.steer_end_point = req.point
+            self.steer_point = Point()
+            self.steer_start_point.x = self.state.pose.pose.position.x
+            self.steer_start_point.y = self.state.pose.pose.position.y
             self.mission = 6
             msg = "Robot " + str(self.id_nbr) + ": Will steer towards" + str(req.point)
             self.mission_lock.release()
@@ -329,6 +332,19 @@ class Robot(object):
         return math.fabs(self.state.twist.twist.linear.x) <= 0.01 and math.fabs(self.state.twist.twist.angular.z) <= 0.01
 
     def do_steer_towards(self):
+        lr = math.sqrt(self.state.pose.pose.position.x ** 2 + self.state.pose.pose.position.y ** 2)
+        vx = (self.steer_end_point.x - self.steer_start_point.x)
+        vy = (self.steer_end_point.y - self.steer_start_point.y)
+        lv = math.sqrt(vx ** 2 + vy ** 2)
+        # Change this contant if you want the aim point to be further in front of robot.
+        c = 0.5
+        t = (lr+c)/lv
+        if t >= 1.0:
+            self.steer_point = self.steer_end_point
+        else:
+            self.steer_point.x = vx*t+self.steer_start_point.x
+            self.steer_point.y = vy*t+self.steer_start_point.y
+
         self.aim_point = self.steer_point
         self.do_aim_at_point()
 
@@ -340,15 +356,11 @@ class Robot(object):
 
         x = self.state.pose.pose.position.x
         y = self.state.pose.pose.position.y
-        pointx = self.steer_point.x
-        pointy = self.steer_point.y
+        pointx = self.steer_end_point.x
+        pointy = self.steer_end_point.y
 
         length = math.sqrt(math.pow(pointx - x, 2) + math.pow(pointy - y, 2))
-	'''
-	if length <= 0.2:
-		self.P_ang_val = 3.5/math.pi
-        '''
-	return length <= 0.2
+        return length <= 0.2
 
     def small_steer(self):
         self.do_aim_at_point()
@@ -430,6 +442,8 @@ class Robot(object):
         self.acc = 0.0
         self.last_acc = 0.0
         self.steer_point = Point()
+        self.steer_start_point = Point()
+        self.steer_end_point = Point()
         self.ang_vel = 0.0
         self.is_steering_with_acc = False
         self.is_freemoving_with_acc = False
