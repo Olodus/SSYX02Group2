@@ -332,7 +332,7 @@ class Robot(object):
         return math.fabs(self.state.twist.twist.linear.x) <= 0.01 and math.fabs(self.state.twist.twist.angular.z) <= 0.01
 
     def do_steer_towards(self):
-        lr = math.sqrt(self.state.pose.pose.position.x ** 2 + self.state.pose.pose.position.y ** 2)
+        lr = math.sqrt((self.state.pose.pose.position.x-self.steer_start_point.x) ** 2 + (self.state.pose.pose.position.y-self.steer_start_point.y) ** 2)
         vx = (self.steer_end_point.x - self.steer_start_point.x)
         vy = (self.steer_end_point.y - self.steer_start_point.y)
         lv = math.sqrt(vx ** 2 + vy ** 2)
