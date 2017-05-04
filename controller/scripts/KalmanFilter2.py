@@ -8,7 +8,7 @@ from kalman2 import Kalman
 import math
 import tf
 import numpy as np
-from robotclient.msg import Floats
+from controller.msg import Floats
 
 class KalmanFilter(object):
     def __init__(self, robot_id):
