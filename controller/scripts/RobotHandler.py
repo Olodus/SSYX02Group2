@@ -292,14 +292,14 @@ class Robot(object):
         if self.angle_to_point > 0:
             rotSpeed = -self.P_ang_val
 
-	self.old_angle = self.angle_to_point
+        self.old_angle = self.angle_to_point
 	
 
         if math.fabs(self.angle_to_point)>1.0*math.pi/180:
-	    if math.fabs(self.angle_to_point) > 30*math.pi/180:
-		self.twist.angular.z = (rotSpeed/math.fabs(rotSpeed))*1.0
-	    else:
-            	self.twist.angular.z = (rotSpeed/math.fabs(rotSpeed))*0.2
+            if math.fabs(self.angle_to_point) > 90*math.pi/180:
+                self.twist.angular.z = (rotSpeed/math.fabs(rotSpeed))*0.7
+            else:
+                self.twist.angular.z = (rotSpeed/math.fabs(rotSpeed))*0.1
             #self.twist.linear.x = 0.05
             return False
         else:
@@ -360,6 +360,8 @@ class Robot(object):
         pointy = self.steer_end_point.y
 
         length = math.sqrt(math.pow(pointx - x, 2) + math.pow(pointy - y, 2))
+        if length <= 0.4:
+            self.twist.linear.x = 0.05
         return length <= 0.2
 
     def small_steer(self):
