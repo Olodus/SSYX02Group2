@@ -54,24 +54,26 @@ def opt_acc(vfinal, a, displacement, r1state, v, t, IP_y):
 		r1dist2ip = math.sqrt(math.pow(r1state.pose.pose.position.x,2)+math.pow(displacement_inc-r1state.pose.pose.position.y,2))
 	    	a = 2*(r1dist2ip-v*t)/t**2
 		vfinal = v+a*t
+		'''
 		if vfinal_old < 0:
-			print "vfinal < 0 ("+str(vfinal_old)+"), calculating new acceleration ("+str(a)+"), new vfinal is: "+str(vfinal)+", displacement is: "+str(displacement_inc)
+			#print "vfinal < 0 ("+str(vfinal_old)+"), calculating new acceleration ("+str(a)+"), new vfinal is: "+str(vfinal)+", displacement is: "+str(displacement_inc)
 		if math.fabs(a_old) < 0.006:
-			print "acceleration value was too small ("+str(a_old)+"), calculated new acceleration now has value: "+str(a)+", displacement is: "+str(displacement_inc)
+			#print "acceleration value was too small ("+str(a_old)+"), calculated new acceleration now has value: "+str(a)+", displacement is: "+str(displacement_inc)
+		'''
 		calculations_int1 = calculations_int1 + 1
 		if calculations_int1 > 500:
-			print "Reached maximum allowed calculations ("+str(calculations_int1)+") for finding final velocity greater than 0, returning emergency acceleration value"
+			#print "Reached maximum allowed calculations ("+str(calculations_int1)+") for finding final velocity greater than 0, returning emergency acceleration value"
 			return -0.5
 
 	    #displacement or displacement_start?
 	    if vfinal >= 1.0 and displacement_dec - 0.05 <= r1state.pose.pose.position.y:
 		if -0.95 < r1state.pose.pose.position.y < -0.75:
-			print "Probability of collision, returning emergency acceleration value"
-			print "Determined from displacement="+str(displacement_dec)+", vfinal="+str(vfinal)+", y="+str(r1state.pose.pose.position.y)
+			#print "Probability of collision, returning emergency acceleration value"
+			#print "Determined from displacement="+str(displacement_dec)+", vfinal="+str(vfinal)+", y="+str(r1state.pose.pose.position.y)
 			return -0.5
 		else:
-			print "No fully optimized solution found, try again later"
-			print "Returned acceleration is: "+str(a)
+			#print "No fully optimized solution found, try again later"
+			#print "Returned acceleration is: "+str(a)
 			return a
 
 	    #displacement or displacement_start?
@@ -81,20 +83,20 @@ def opt_acc(vfinal, a, displacement, r1state, v, t, IP_y):
 		r1dist2ip = math.sqrt(math.pow(r1state.pose.pose.position.x,2)+math.pow(displacement_dec-r1state.pose.pose.position.y,2))
 	    	a = 2*(r1dist2ip-v*t)/t**2
 		vfinal = v+a*t
-		print "vfinal >= 1.0 ("+str(vfinal_old)+"), calculated new acceleration ("+str(a)+"), new vfinal is: "+str(vfinal)+", displacement is: "+str(displacement_dec)
+		#print "vfinal >= 1.0 ("+str(vfinal_old)+"), calculated new acceleration ("+str(a)+"), new vfinal is: "+str(vfinal)+", displacement is: "+str(displacement_dec)
 		calculations_int2 = calculations_int2 + 1
 		if calculations_int2 > 500:
-			print "Reached maximum allowed calculations ("+str(calculations_int2)+") for finding final velocity lesser than 1.0, returning emergency acceleration value"
+			#print "Reached maximum allowed calculations ("+str(calculations_int2)+") for finding final velocity lesser than 1.0, returning emergency acceleration value"
 			return -0.5
 
 	    if calculations_ext > 50:
-		print "Reached maximum allowed calculations, returning emergency acceleration value"
-		print "Number of calculations done to find satsifying acceleration is: "+str(calculations_ext)
+		#print "Reached maximum allowed calculations, returning emergency acceleration value"
+		#print "Number of calculations done to find satsifying acceleration is: "+str(calculations_ext)
 		return -0.5
 	
-	print "Number of calculations done to find satsifying acceleration is: "+str(calculations_ext+calculations_int1+calculations_int2)
-	print "Returned acceleration is: "+str(a)
-	print "Current position is: x="+str(r1state.pose.pose.position.x)+", y="+str(r1state.pose.pose.position.y)
+	#print "Number of calculations done to find satsifying acceleration is: "+str(calculations_ext+calculations_int1+calculations_int2)
+	#print "Returned acceleration is: "+str(a)
+	#print "Current position is: x="+str(r1state.pose.pose.position.x)+", y="+str(r1state.pose.pose.position.y)
 	return a
 
 if __name__ == '__main__':
@@ -131,14 +133,21 @@ if __name__ == '__main__':
             p0 = Point()
             p0.x = -pdist1
             p0.y = 0.0
-            r0.steer_towards(p0)
-	    r0.set_speed(0.4)
-            p1 = Point()
+	    p1 = Point()
             p1.x = 0.0
             p1.y = -pdist1
+
+	    r0.aim_at_point(p0)
+	    r1.aim_at_point(p1)
+
+	    h.wait_til_both_ready(r0,r1)
+
+            r0.steer_towards(p0)
+	    r0.set_speed(0.4)
             r1.steer_towards(p1)
 	    r1.set_speed(0.4)
-            rospy.sleep(1.5)
+            #rospy.sleep(1.5)
+
             h.wait_til_both_ready(r0,r1)
             print "Both robots are now at starting points"
 
@@ -151,7 +160,7 @@ if __name__ == '__main__':
             p1.x = 0.0
             p1.y = pdist2
             r1.aim_at_point(p1)
-            rospy.sleep(0.5)
+            #rospy.sleep(0.5)
             h.wait_til_both_ready(r0, r1)
             print "Both robots are now aimed correctly"
 
@@ -197,10 +206,10 @@ if __name__ == '__main__':
 		    r1dist2ip = math.sqrt(math.pow(IP_x-r1state.pose.pose.position.x,2)+math.pow(IP_y+displacement-r1state.pose.pose.position.y,2))
 		    t = r0dist2ip/r0state.twist.twist.linear.x
 
-		    print "--------------------------------------"
-		    print "number of crossings is: "+str(numberOfCrossings)
-		    print "time to cross [0,0] for robot0 is: "+str(t)
-		    print "distance to intersection for robot0 is: "+str(r0dist2ip)
+		    #print "--------------------------------------"
+		    #print "number of crossings is: "+str(numberOfCrossings)
+		    #print "time to cross [0,0] for robot0 is: "+str(t)
+		    #print "distance to intersection for robot0 is: "+str(r0dist2ip)
 		    #print "velocity of robot0 is: "+str(r0state.twist.twist.linear.x)
 		    v = r1state.twist.twist.linear.x
 		    a = 2*(r1dist2ip-v*t)/t**2
@@ -209,23 +218,23 @@ if __name__ == '__main__':
 		    a = opt_acc(vfinal, a, displacement, r1state, v, t, IP_y)
 
 		    #print "time to cross [0,"+str(displacement)+"] for robot1 is: "+str(t)
-		    print "distance to initial intersection for robot1 is: "+str(r1dist2ip)
-		    print "velocity for robot1 is: "+str(v)
+		    #print "distance to initial intersection for robot1 is: "+str(r1dist2ip)
+		    #print "velocity for robot1 is: "+str(v)
 		    #print "new calculated acceleration value is: "+str(a)
 
 		    if a < a_old:	
 		    	resp = r1.set_acc(a)
 		        a_old = a
-			print "new minimzed acceleration solution found, acceleration for robot1 is now: "+str(a)
-		        print "--------------------------------------"
+			#print "new minimzed acceleration solution found, acceleration for robot1 is now: "+str(a)
+		        #print "--------------------------------------"
 		    else:
 			resp = r1.set_acc(a_old)
-			print "acceleration for robot1 is: "+str(a_old)
-		        print "--------------------------------------"
+			#print "acceleration for robot1 is: "+str(a_old)
+		        #print "--------------------------------------"
 
 		    rospy.sleep(0.5)
 
-            print "robot0 passed mid"
+            #print "robot0 passed mid"
 	    numberOfCrossings = numberOfCrossings + 1
 
 	    #possible that r1 has greater final velocity than r0's constant velocity, if r0 doesn't accelerate fast enough
