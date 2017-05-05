@@ -1,3 +1,4 @@
+#!/bin/bash
 if [[ $* == *-robot0* ]]
 then
   rosrun controller get_coord_server.py __name:=get_coord_server0 _ip_of_uwb:=101
