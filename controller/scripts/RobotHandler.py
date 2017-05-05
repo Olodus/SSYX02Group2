@@ -294,13 +294,16 @@ class Robot(object):
 
         self.old_angle = self.angle_to_point
 	
-
         if math.fabs(self.angle_to_point)>1.0*math.pi/180:
-            if math.fabs(self.angle_to_point) > 90*math.pi/180:
+            if math.fabs(self.angle_to_point) > 60*math.pi/180:
+		print "robot is :"+str(self.id_nbr)+", absolute angle greater than 90, is: "+str(math.fabs(self.angle_to_point)*180/math.pi)
+		self.twist.linear.x = 0.05
                 self.twist.angular.z = (rotSpeed/math.fabs(rotSpeed))*1.0
-            elif math.fabs(self.angle_to_point) > 30*math.pi/180:
-                self.twist.angular.z = (rotSpeed / math.fabs(rotSpeed)) * 0.5
+	    elif math.fabs(self.angle_to_point) > 30*math.pi/180:
+		print "robot is :"+str(self.id_nbr)+", absolute angle greater than 30, is: "+str(math.fabs(self.angle_to_point)*180/math.pi)
+		self.twist.angular.z = (rotSpeed/math.fabs(rotSpeed))*0.5
             else:
+		print "robot is :"+str(self.id_nbr)+", absolute angle lesser than 30, is: "+str(math.fabs(self.angle_to_point)*180/math.pi)
                 self.twist.angular.z = (rotSpeed/math.fabs(rotSpeed))*0.1
             #self.twist.linear.x = 0.05
             return False
@@ -347,14 +350,14 @@ class Robot(object):
             self.steer_point.x = vx*t+self.steer_start_point.x
             self.steer_point.y = vy*t+self.steer_start_point.y
 
-        self.aim_point = self.steer_point
-        self.do_aim_at_point()
-
         # Either do set speed or set acc
         if self.is_steering_with_acc:
             self.do_set_acc()
         else:
             self.do_set_speed()
+
+        self.aim_point = self.steer_point
+        self.do_aim_at_point()
 
         x = self.state.pose.pose.position.x
         y = self.state.pose.pose.position.y
@@ -362,8 +365,11 @@ class Robot(object):
         pointy = self.steer_end_point.y
 
         length = math.sqrt(math.pow(pointx - x, 2) + math.pow(pointy - y, 2))
-        if length <= 0.3:
-            self.twist.linear.x = 0.1
+	print "robot is :"+str(self.id_nbr)+", length to point is: "+str(length)
+	'''
+        if length <= 0.4:
+            self.twist.linear.x = 0.05
+	'''
         return length <= 0.2
 
     def small_steer(self):

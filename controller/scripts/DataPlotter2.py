@@ -86,11 +86,11 @@ if __name__ == '__main__':
 
 		#t_filter = range(0,filter_min_length)
 		#t_sensor = range(0,filter_min_length)
-                red_dot = plt.plot(rds[i].sensor_data_x[:sensor_min_length],rds[i].sensor_data_y[:sensor_min_length], 'ro',markersize = 5, marker='o', label="Measured state")
+                #red_dot = plt.plot(rds[i].sensor_data_x[:sensor_min_length],rds[i].sensor_data_y[:sensor_min_length], 'ro',markersize = 5, marker='o', label="Measured state")
 
                 green_dot = plt.plot(rds[i].filter_data_x[:filter_min_length],rds[i].filter_data_y[:filter_min_length],'go', markersize = 5, marker='o', label="Filtered state")
 
-		blue_dot = plt.plot(rds[i].prediction_data_x[:prediction_min_length],rds[i].prediction_data_y[:prediction_min_length],'bo', markersize = 5, marker = 'o', label="Predicted state")
+		#blue_dot = plt.plot(rds[i].prediction_data_x[:prediction_min_length],rds[i].prediction_data_y[:prediction_min_length],'bo', markersize = 5, marker = 'o', label="Predicted state")
 		if not legendAdded:
 		    #plt.legend()
 		    legendAdded = True
