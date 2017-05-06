@@ -5,8 +5,8 @@ import csv
 import time
 import numpy as np
 from rospy.numpy_msg import numpy_msg
-from robotclient.msg import Floats
-from robotclient.srv import *
+from controller.msg import Floats
+from controller.srv import *
 
 
 def save_coordinates(n,rid):
