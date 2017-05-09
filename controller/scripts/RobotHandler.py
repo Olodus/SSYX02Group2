@@ -147,6 +147,8 @@ class Robot(object):
         self.mission_lock.acquire()
         if self.executing:
             if self.mission == 6:
+                para = {'trans_accel': 1.0, 'trans_decel': 1.0}
+                self.dyn_par.update_configuration(para)
                 self.is_steering_with_acc = False
                 self.desired_speed = req.speed
                 msg = "Robot " + str(self.id_nbr) + ": Will set speed to " + str(req.speed)
@@ -277,12 +279,6 @@ class Robot(object):
         robot_angle = euler[2]
         self.angle_to_point = robot_angle - angle
 
-	'''
-	if math.fabs(self.angle_to_point) - math.fabs(self.old_angle) < 0.000001 and self.mission == 6 and math.fabs(self.angle_to_point) > 1.0*math.pi/180:
-		self.P_ang_val = self.P_ang_val + 0.01
-		#print "P-regulator value increased since robot stayed on same angle, new value is: "+str(self.P_ang_val)
-	'''
-
         if self.angle_to_point > math.pi:
             self.angle_to_point = self.angle_to_point-2*math.pi
         if self.angle_to_point < -math.pi:
@@ -293,19 +289,19 @@ class Robot(object):
             rotSpeed = -self.P_ang_val
 
         self.old_angle = self.angle_to_point
-	
+
         if math.fabs(self.angle_to_point)>1.0*math.pi/180:
             if math.fabs(self.angle_to_point) > 60*math.pi/180:
-		print "robot is :"+str(self.id_nbr)+", absolute angle greater than 90, is: "+str(math.fabs(self.angle_to_point)*180/math.pi)
-		self.twist.linear.x = 0.05
+                print "robot is :"+str(self.id_nbr)+", absolute angle greater than 90, is: "+str(math.fabs(self.angle_to_point)*180/math.pi)
+                self.twist.linear.x = 0.05
                 self.twist.angular.z = (rotSpeed/math.fabs(rotSpeed))*1.0
-	    elif math.fabs(self.angle_to_point) > 30*math.pi/180:
-		print "robot is :"+str(self.id_nbr)+", absolute angle greater than 30, is: "+str(math.fabs(self.angle_to_point)*180/math.pi)
-		self.twist.angular.z = (rotSpeed/math.fabs(rotSpeed))*0.5
+            elif math.fabs(self.angle_to_point) > 30*math.pi/180:
+                print "robot is :"+str(self.id_nbr)+", absolute angle greater than 30, is: "+str(math.fabs(self.angle_to_point)*180/math.pi)
+                self.twist.angular.z = (rotSpeed/math.fabs(rotSpeed))*0.5
             else:
-		print "robot is :"+str(self.id_nbr)+", absolute angle lesser than 30, is: "+str(math.fabs(self.angle_to_point)*180/math.pi)
+                print "robot is :"+str(self.id_nbr)+", absolute angle lesser than 30, is: "+str(math.fabs(self.angle_to_point)*180/math.pi)
                 self.twist.angular.z = (rotSpeed/math.fabs(rotSpeed))*0.1
-            #self.twist.linear.x = 0.05
+                #self.twist.linear.x = 0.05
             return False
         else:
             self.twist.angular.z = 0.0
@@ -337,6 +333,7 @@ class Robot(object):
         return math.fabs(self.state.twist.twist.linear.x) <= 0.01 and math.fabs(self.state.twist.twist.angular.z) <= 0.01
 
     def do_steer_towards(self):
+        steer_point = Point()
         lr = math.sqrt((self.state.pose.pose.position.x-self.steer_start_point.x) ** 2 + (self.state.pose.pose.position.y-self.steer_start_point.y) ** 2)
         vx = (self.steer_end_point.x - self.steer_start_point.x)
         vy = (self.steer_end_point.y - self.steer_start_point.y)
@@ -345,18 +342,20 @@ class Robot(object):
         c = 0.5
         t = (lr+c)/lv
         if t >= 1.0:
-            self.steer_point = self.steer_end_point
+            steer_point = self.steer_end_point
         else:
-            self.steer_point.x = vx*t+self.steer_start_point.x
-            self.steer_point.y = vy*t+self.steer_start_point.y
+            steer_point.x = vx*t+self.steer_start_point.x
+            steer_point.y = vy*t+self.steer_start_point.y
 
         # Either do set speed or set acc
         if self.is_steering_with_acc:
             self.do_set_acc()
         else:
+            para = {'trans_accel': 1.0, 'trans_decel': 1.0}
+            self.dyn_par.update_configuration(para)
             self.do_set_speed()
 
-        self.aim_point = self.steer_point
+        self.aim_point = steer_point
         self.do_aim_at_point()
 
         x = self.state.pose.pose.position.x
@@ -365,11 +364,12 @@ class Robot(object):
         pointy = self.steer_end_point.y
 
         length = math.sqrt(math.pow(pointx - x, 2) + math.pow(pointy - y, 2))
-	print "robot is :"+str(self.id_nbr)+", length to point is: "+str(length)
-	'''
+
         if length <= 0.4:
+            para = {'trans_accel': 1.0, 'trans_decel': 1.0}
+            self.dyn_par.update_configuration(para)
             self.twist.linear.x = 0.05
-	'''
+
         return length <= 0.2
 
     def small_steer(self):
@@ -433,8 +433,8 @@ class Robot(object):
         self.startTime = rospy.get_time()
         self.timePassed2 = 0.0
 
-	self.old_angle = 0.0
-	self.P_ang_val = 3.5/math.pi
+        self.old_angle = 0.0
+        self.P_ang_val = 3.5/math.pi
 
         # State
         self.state = Odometry()
@@ -451,7 +451,6 @@ class Robot(object):
         self.desired_speed = 0.0
         self.acc = 0.0
         self.last_acc = 0.0
-        self.steer_point = Point()
         self.steer_start_point = Point()
         self.steer_end_point = Point()
         self.ang_vel = 0.0
