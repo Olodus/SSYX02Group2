@@ -293,6 +293,8 @@ class Robot(object):
         if math.fabs(self.angle_to_point)>1.0*math.pi/180:
             if math.fabs(self.angle_to_point) > 60*math.pi/180:
                 print "robot is :"+str(self.id_nbr)+", absolute angle greater than 90, is: "+str(math.fabs(self.angle_to_point)*180/math.pi)
+                para = {'trans_accel': 1.0, 'trans_decel': 1.0}
+                self.dyn_par.update_configuration(para)
                 self.twist.linear.x = 0.05
                 self.twist.angular.z = (rotSpeed/math.fabs(rotSpeed))*1.0
             elif math.fabs(self.angle_to_point) > 30*math.pi/180:
