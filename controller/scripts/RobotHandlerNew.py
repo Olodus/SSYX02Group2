@@ -53,7 +53,7 @@ class Robot(object):
         elif self.mission == 6:
             return self.do_steer_towards()
         elif self.mission == 7:
-            return self.do_calibrate_angel()
+            return self.do_calibrate_angle()
 
     def publish_twist(self):
         self.pub.publish(self.twist)
@@ -373,8 +373,8 @@ class Robot(object):
         if self.is_steering_with_acc:
             self.do_set_acc()
         else:
-            para = {'trans_accel': 1.0, 'trans_decel': 1.0}
-            self.dyn_par.update_configuration(para)
+            #para = {'trans_accel': 1.0, 'trans_decel': 1.0}
+            #self.dyn_par.update_configuration(para)
             self.do_set_speed()
 
         self.aim_point = steer_point
@@ -390,12 +390,13 @@ class Robot(object):
         if length <= 0.4:
             para = {'trans_accel': 1.0, 'trans_decel': 1.0}
             self.dyn_par.update_configuration(para)
-            self.twist.linear.x = 0.05
+            self.twist.linear.x = 0.1
 
         return length <= 0.2
 
     def do_calibrate_angle(self):
         self.calibrate_counter = self.calibrate_counter+1
+        self.twist.linear.x = 0.3
         if self.calibrate_counter == 1:
             # Save start point
             self.calibrate_start_point.x = self.state.pose.pose.position.x
@@ -404,12 +405,17 @@ class Robot(object):
             para = {'trans_accel': 1.0, 'trans_decel': 1.0}
             self.dyn_par.update_configuration(para)
             # Start the robot moving in straight line
-            self.desired_speed = 0.3
-            self.do_set_speed()
+            #print "Calibrate 1st step"
             return False
-        elif self.calibrate_counter > 30 and self.calibrate_counter <= 100:
+        elif self.calibrate_counter > 20 and self.calibrate_counter <= 50:
             # Calculates angle from start point and adds it
-            self.calibrate_meas = np.append(self.calibrate_meas,math.atan2(self.state.pose.pose.position.y-self.calibrate_start_point.y,self.state.pose.pose.position.x-self.calibrate_start_point.x))
+            angle = math.atan2(self.state.pose.pose.position.y-self.calibrate_start_point.y,self.state.pose.pose.position.x-self.calibrate_start_point.x)
+            if angle > math.pi:
+                angle = angle-2*math.pi
+            if angle < -math.pi:
+                angle = angle+2*math.pi
+            self.calibrate_meas = np.append(self.calibrate_meas,angle)
+            #print "Calibrate 2st step"
             return False
 
         elif self.calibrate_counter > 100:
@@ -419,6 +425,7 @@ class Robot(object):
             mean_ang = np.mean(self.calibrate_meas)
             # Post on calibrate angle topic
             self.cali_pub.publish(mean_ang)
+            print mean_ang
             return True
         else:
             return False
@@ -555,7 +562,7 @@ class Robot(object):
 
         self.mission_lock = threading.Lock()
 
-        self.cali_pub = rospy.Publisher("Robot" + str(id_nbr) + "/calibration", Float32)
+        self.cali_pub = rospy.Publisher("Robot" + str(id_nbr) + "/calibration", Float32, queue_size=1)
 
 
 if __name__ == '__main__':

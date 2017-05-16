@@ -59,7 +59,7 @@ class KalmanFilter(object):
     def calibrate(self, data):
         self.calibration_active = True
 
-        new_angle = data
+        new_angle = data.data
         self.angle_error = self.state[2] - new_angle
         self.kf.reset_correction()
 

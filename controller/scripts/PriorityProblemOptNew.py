@@ -147,8 +147,10 @@ if __name__ == '__main__':
 
 	    h.wait_til_both_ready(r0,r1)
 
-			r0calibrate()
-			r1calibrate()
+	    r0calibrate()
+            r1calibrate()
+
+            h.wait_til_both_ready(r0,r1)
 
             r0.steer_towards(p0)
 	    r0.set_speed(0.4)
