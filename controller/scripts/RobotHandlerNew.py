@@ -83,6 +83,8 @@ class Robot(object):
         elif self.mission == 6:
             # Steer towards
             self.mission = 5
+        elif self.mission == 7:
+            self.mission = 5
         para = {'trans_accel': 1.0, 'trans_decel': 1.0}
         self.dyn_par.update_configuration(para)
 
@@ -543,7 +545,7 @@ class Robot(object):
         s = rospy.Service('Robot' + str(id_nbr) + '/set_ang_vel', SetAngVel, self.set_ang_speed)
 
         # Creating 'calibrate_angle' service
-        v = rospy.Service('Robot' + str(id_nbr) + '/calibrate_angle', CalibrateAngle, self.calibrate_angle)
+        v = rospy.Service('Robot' + str(id_nbr) + '/calibrate_angle', Stop, self.calibrate_angle)
 
         # Creating 'get_state' service
         h = rospy.Service('Robot' + str(id_nbr) + '/get_state', GetState, self.get_state)
